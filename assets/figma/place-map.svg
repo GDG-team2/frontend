@@ -1,0 +1,22 @@
+<svg preserveAspectRatio="none" overflow="visible" style="display: block;" width="342" height="166" viewBox="0 0 342 166" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="Map Preview">
+<g clip-path="url(#clip0_0_44)">
+<path d="M0 20C0 8.9543 8.95431 0 20 0H322C333.046 0 342 8.9543 342 20V146C342 157.046 333.046 166 322 166H20C8.95431 166 0 157.046 0 146V20Z" fill="#F0F0EA"/>
+<rect id="Rectangle" x="190" y="18" width="132" height="70" rx="18" fill="#DCEFD7"/>
+<rect id="Rectangle_2" x="-20" y="52" width="390" height="16" rx="8" transform="rotate(-7 -20 52)" fill="white"/>
+<rect id="Rectangle_3" x="18" y="124" width="350" height="16" rx="8" transform="rotate(5 18 124)" fill="white"/>
+<rect id="Rectangle_4" x="56" y="-20" width="48" height="16" rx="8" transform="rotate(-9 56 -20)" fill="white"/>
+<rect id="Rectangle_5" x="250" y="-10" width="54" height="16" rx="8" transform="rotate(4 250 -10)" fill="white"/>
+<line id="Line" x1="76.5201" y1="120.716" x2="248.661" y2="176.648" stroke="#7767F7" stroke-width="4" stroke-linecap="round"/>
+<g id="Frame">
+<path id="Vector" d="M273.333 69.6667C273.333 75.5 264 82.5 264 82.5C264 82.5 254.667 75.5 254.667 69.6667C254.667 67.1913 255.65 64.8173 257.4 63.067C259.151 61.3167 261.525 60.3333 264 60.3333C266.475 60.3333 268.849 61.3167 270.6 63.067C272.35 64.8173 273.333 67.1913 273.333 69.6667Z" fill="#D9F56A" stroke="#161614" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/>
+<path id="Vector_2" d="M264 72.4667C265.546 72.4667 266.8 71.2131 266.8 69.6667C266.8 68.1203 265.546 66.8667 264 66.8667C262.454 66.8667 261.2 68.1203 261.2 69.6667C261.2 71.2131 262.454 72.4667 264 72.4667Z" fill="white" stroke="#161614" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/>
+</g>
+</g>
+</g>
+<defs>
+<clipPath id="clip0_0_44">
+<path d="M0 20C0 8.9543 8.95431 0 20 0H322C333.046 0 342 8.9543 342 20V146C342 157.046 333.046 166 322 166H20C8.95431 166 0 157.046 0 146V20Z" fill="white"/>
+</clipPath>
+</defs>
+</svg>
