@@ -3,7 +3,7 @@ import { ArrowLeft, type LucideIcon } from "lucide-react-native";
 import { Pressable, StyleSheet, View } from "react-native";
 
 import { AppText } from "@/components/ui/AppText";
-import { colors, layout, spacing } from "@/constants/theme";
+import { colors, font, layout, spacing } from "@/constants/theme";
 
 type TopBarProps = {
   title?: string;
@@ -24,7 +24,7 @@ export function TopBar({ title, showBack = true, rightIcon: RightIcon, rightLabe
           </Pressable>
         ) : null}
       </View>
-      <AppText variant="label" numberOfLines={1} style={styles.title}>
+      <AppText numberOfLines={1} style={styles.title}>
         {title}
       </AppText>
       <View style={[styles.side, styles.right]}>
@@ -36,7 +36,7 @@ export function TopBar({ title, showBack = true, rightIcon: RightIcon, rightLabe
             onPress={onRightPress}
             style={styles.iconButton}
           >
-            {RightIcon ? <RightIcon color={colors.ink} size={21} /> : <AppText variant="label">{rightLabel}</AppText>}
+            {RightIcon ? <RightIcon color={colors.ink} size={21} /> : <AppText style={styles.rightLabel}>{rightLabel}</AppText>}
           </Pressable>
         ) : null}
       </View>
@@ -53,9 +53,14 @@ const styles = StyleSheet.create({
     alignItems: "center",
     borderBottomColor: colors.border,
     borderBottomWidth: StyleSheet.hairlineWidth,
+    backgroundColor: colors.surface,
+    zIndex: 20,
   },
   side: { width: 72, alignItems: "flex-start" },
   right: { alignItems: "flex-end" },
   iconButton: { minWidth: layout.minTouch, minHeight: layout.minTouch, alignItems: "center", justifyContent: "center" },
-  title: { flex: 1, textAlign: "center" },
+  title: { flex: 1, textAlign: "center", fontFamily: font.bold, fontSize: 18, lineHeight: 24, letterSpacing: -0.3 },
+  rightLabel: { fontFamily: font.medium, fontSize: 14, lineHeight: 20 },
 });
+
+TopBar.displayName = "TopBar";

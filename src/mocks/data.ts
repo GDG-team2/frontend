@@ -9,7 +9,7 @@ import type {
 
 export const mockUser: UserProfile = {
   id: "user-01",
-  nickname: "은후",
+  nickname: "선우",
   district: "서울 마포구",
   streak: 4,
   totalOutings: 28,
@@ -116,5 +116,5 @@ export const mockRanking: RankingEntry[] = [
   { rank: 1, nickname: "산책하는고래", outings: 8 },
   { rank: 2, nickname: "마포초록", outings: 7 },
   { rank: 3, nickname: "느린발걸음", outings: 6 },
-  { rank: 12, nickname: "은후", outings: 3, isMe: true },
+  { rank: 12, nickname: "선우", outings: 3, isMe: true },
 ];

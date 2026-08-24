@@ -1,4 +1,4 @@
-import { API_BASE_URL } from "@/mocks/handlers";
+import { API_BASE_URL } from "@/constants/api";
 import { useAppStore } from "@/store/app-store";
 
 export class ApiError extends Error {

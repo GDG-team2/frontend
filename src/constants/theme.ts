@@ -6,18 +6,19 @@ export const colors = {
   inkFaint: "#9B9A93",
   canvas: "#F2F1EB",
   surface: "#FFFFFF",
+  surfaceRaised: "#FFFFFF",
   surfaceSubtle: "#F7F6F1",
   chip: "#F4F3ED",
   border: "#E8E7E0",
   borderStrong: "#DAD9D2",
-  lime: "#D9F56A",
-  limeStrong: "#CFF75A",
-  limeSoft: "#EEF9B9",
+  lime: "#DAF768",
+  limeStrong: "#D0F958",
+  limeSoft: "#EEFAB8",
   limeFaint: "#F2F8CF",
   limeInk: "#59620D",
   limeIcon: "#7EAA19",
-  purple: "#7767F7",
-  purpleStrong: "#6857E6",
+  purple: "#7463FB",
+  purpleStrong: "#6553EA",
   purpleSoft: "#EAE6FF",
   purpleFaint: "#F2EFFF",
   purpleInk: "#5142C6",
@@ -43,11 +44,11 @@ export const spacing = {
 } as const;
 
 export const radius = {
-  sm: 8,
-  md: 12,
-  lg: 16,
-  xl: 20,
-  xxl: 24,
+  sm: 9,
+  md: 14,
+  lg: 18,
+  xl: 22,
+  xxl: 26,
   round: 999,
 } as const;
 
@@ -59,31 +60,71 @@ export const font = {
 } as const;
 
 export const shadow = {
+  soft: Platform.select({
+    ios: {
+      shadowColor: "#161614",
+      shadowOffset: { width: 0, height: 4 },
+      shadowOpacity: 0.06,
+      shadowRadius: 12,
+    },
+    android: { elevation: 2 },
+    default: { boxShadow: "0 4px 14px rgba(22,22,20,0.06)" },
+  }),
   card: Platform.select({
     ios: {
       shadowColor: "#161614",
-      shadowOffset: { width: 0, height: 8 },
-      shadowOpacity: 0.06,
-      shadowRadius: 20,
+      shadowOffset: { width: 0, height: 10 },
+      shadowOpacity: 0.09,
+      shadowRadius: 22,
     },
-    android: { elevation: 3 },
-    default: { boxShadow: "0 8px 24px rgba(22,22,20,0.06)" },
+    android: { elevation: 4 },
+    default: { boxShadow: "0 10px 28px rgba(22,22,20,0.09)" },
+  }),
+  raised: Platform.select({
+    ios: {
+      shadowColor: "#161614",
+      shadowOffset: { width: 0, height: 12 },
+      shadowOpacity: 0.12,
+      shadowRadius: 28,
+    },
+    android: { elevation: 7 },
+    default: { boxShadow: "0 14px 36px rgba(22,22,20,0.12)" },
   }),
   floating: Platform.select({
     ios: {
       shadowColor: "#161614",
-      shadowOffset: { width: 0, height: -6 },
-      shadowOpacity: 0.08,
-      shadowRadius: 16,
+      shadowOffset: { width: 0, height: 10 },
+      shadowOpacity: 0.14,
+      shadowRadius: 18,
     },
     android: { elevation: 8 },
-    default: { boxShadow: "0 -8px 28px rgba(22,22,20,0.08)" },
+    default: { boxShadow: "0 10px 24px rgba(22,22,20,0.14)" },
+  }),
+  docked: Platform.select({
+    ios: {
+      shadowColor: "#161614",
+      shadowOffset: { width: 0, height: -5 },
+      shadowOpacity: 0.1,
+      shadowRadius: 18,
+    },
+    android: { elevation: 8 },
+    default: { boxShadow: "0 -6px 24px rgba(22,22,20,0.1)" },
+  }),
+  tab: Platform.select({
+    ios: {
+      shadowColor: "#161614",
+      shadowOffset: { width: 0, height: 12 },
+      shadowOpacity: 0.15,
+      shadowRadius: 28,
+    },
+    android: { elevation: 10 },
+    default: { boxShadow: "0 12px 34px rgba(22,22,20,0.15)" },
   }),
 } as const;
 
 export const layout = {
   maxWidth: 480,
-  screenPadding: 20,
+  screenPadding: 24,
   minTouch: 44,
-  bottomActionHeight: 88,
+  bottomActionHeight: 92,
 } as const;

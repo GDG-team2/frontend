@@ -28,14 +28,14 @@ const styles = StyleSheet.create({
   display: {
     fontFamily: font.bold,
     fontSize: 32,
-    lineHeight: 42,
-    letterSpacing: -1.1,
+    lineHeight: 40,
+    letterSpacing: -1.2,
   },
   title: {
     fontFamily: font.bold,
     fontSize: 24,
-    lineHeight: 34,
-    letterSpacing: -0.65,
+    lineHeight: 32,
+    letterSpacing: -0.7,
   },
   heading: {
     fontFamily: font.bold,
@@ -44,8 +44,8 @@ const styles = StyleSheet.create({
     letterSpacing: -0.35,
   },
   body: {
-    fontSize: 15,
-    lineHeight: 23,
+    fontSize: 16,
+    lineHeight: 24,
     letterSpacing: -0.2,
   },
   label: {

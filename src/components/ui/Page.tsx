@@ -1,4 +1,4 @@
-import type { PropsWithChildren, ReactNode } from "react";
+import { Children, isValidElement, type PropsWithChildren, type ReactNode } from "react";
 import {
   KeyboardAvoidingView,
   Platform,
@@ -11,10 +11,14 @@ import {
 } from "react-native";
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 
-import { colors, layout, shadow, spacing } from "@/constants/theme";
+import { colors, layout, radius, shadow, spacing } from "@/constants/theme";
+
+type ActionMode = "docked" | "floating";
 
 type PageProps = PropsWithChildren<{
   action?: ReactNode;
+  actionHeight?: number;
+  actionMode?: ActionMode;
   scroll?: boolean;
   padded?: boolean;
   backgroundColor?: string;
@@ -26,6 +30,8 @@ type PageProps = PropsWithChildren<{
 export function Page({
   children,
   action,
+  actionHeight = layout.bottomActionHeight,
+  actionMode = "docked",
   scroll = true,
   padded = true,
   backgroundColor = colors.surface,
@@ -34,7 +40,16 @@ export function Page({
   scrollProps,
 }: PageProps) {
   const insets = useSafeAreaInsets();
-  const contentPaddingBottom = action ? layout.bottomActionHeight + insets.bottom + spacing.lg : spacing.xxl + insets.bottom;
+  const childArray = Children.toArray(children);
+  const firstChild = childArray[0];
+  const firstChildType = isValidElement(firstChild) ? firstChild.type : null;
+  const firstChildIsTopBar =
+    typeof firstChildType === "function" &&
+    (firstChildType as { displayName?: string }).displayName === "TopBar";
+  const contentPaddingBottom = action
+    ? actionHeight + insets.bottom + (actionMode === "docked" ? spacing.md : 0)
+    : spacing.xxl + insets.bottom;
+  const stickyHeaderIndices = scrollProps?.stickyHeaderIndices ?? (firstChildIsTopBar ? [0] : undefined);
   const sharedContentStyle = [
     styles.content,
     padded && styles.padded,
@@ -49,6 +64,8 @@ export function Page({
           {scroll ? (
             <ScrollView
               {...scrollProps}
+              stickyHeaderIndices={stickyHeaderIndices}
+              scrollIndicatorInsets={scrollProps?.scrollIndicatorInsets ?? { bottom: action ? actionHeight : 0 }}
               keyboardShouldPersistTaps="handled"
               showsVerticalScrollIndicator={false}
               contentContainerStyle={sharedContentStyle}
@@ -59,7 +76,20 @@ export function Page({
             <View style={sharedContentStyle}>{children}</View>
           )}
           {action ? (
-            <View style={[styles.action, { paddingBottom: Math.max(insets.bottom, spacing.sm) }]}>{action}</View>
+            <View
+              style={[
+                styles.action,
+                actionMode === "floating" ? styles.actionFloating : styles.actionDocked,
+                {
+                  paddingBottom:
+                    actionMode === "floating"
+                      ? Math.max(insets.bottom + spacing.xxs, spacing.md)
+                      : Math.max(insets.bottom, spacing.sm),
+                },
+              ]}
+            >
+              {actionMode === "floating" ? <View style={styles.floatingSurface}>{action}</View> : action}
+            </View>
           ) : null}
         </KeyboardAvoidingView>
       </SafeAreaView>
@@ -91,11 +121,26 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     bottom: 0,
-    paddingTop: spacing.sm,
     paddingHorizontal: layout.screenPadding,
-    backgroundColor: colors.surface,
+    zIndex: 10,
+  },
+  actionDocked: {
+    paddingTop: spacing.md,
+    backgroundColor: colors.surfaceRaised,
     borderTopWidth: StyleSheet.hairlineWidth,
     borderTopColor: colors.border,
+  },
+  actionFloating: {
+    paddingTop: spacing.xs,
+    backgroundColor: colors.transparent,
+  },
+  floatingSurface: {
+    width: "72%",
+    minWidth: 232,
+    maxWidth: 280,
+    alignSelf: "center",
+    borderRadius: radius.round,
+    backgroundColor: colors.ink,
     ...shadow.floating,
   },
 });

@@ -18,13 +18,13 @@ type ButtonProps = {
   accessibilityHint?: string;
 };
 
-const palette: Record<ButtonVariant, { background: string; foreground: string; border: string }> = {
-  primary: { background: colors.ink, foreground: colors.white, border: colors.ink },
-  secondary: { background: colors.surface, foreground: colors.ink, border: colors.borderStrong },
-  lime: { background: colors.lime, foreground: colors.ink, border: colors.lime },
-  kakao: { background: colors.kakao, foreground: colors.ink, border: colors.kakao },
-  danger: { background: colors.dangerSoft, foreground: colors.danger, border: colors.dangerSoft },
-  ghost: { background: colors.transparent, foreground: colors.inkMuted, border: colors.transparent },
+const palette: Record<ButtonVariant, { background: string; foreground: string; border: string; iconBackground: string }> = {
+  primary: { background: colors.ink, foreground: colors.white, border: colors.ink, iconBackground: "rgba(255,255,255,0.12)" },
+  secondary: { background: colors.surfaceRaised, foreground: colors.ink, border: colors.border, iconBackground: colors.surfaceSubtle },
+  lime: { background: colors.lime, foreground: colors.ink, border: colors.lime, iconBackground: "rgba(255,255,255,0.38)" },
+  kakao: { background: colors.kakao, foreground: colors.ink, border: colors.kakao, iconBackground: "rgba(255,255,255,0.36)" },
+  danger: { background: colors.dangerSoft, foreground: colors.danger, border: colors.dangerSoft, iconBackground: "rgba(255,255,255,0.44)" },
+  ghost: { background: colors.transparent, foreground: colors.inkMuted, border: colors.transparent, iconBackground: colors.surfaceSubtle },
 };
 
 export function Button({
@@ -56,8 +56,8 @@ export function Button({
         {
           backgroundColor: colorsForVariant.background,
           borderColor: colorsForVariant.border,
-          opacity: disabled ? 0.45 : pressed ? 0.82 : 1,
-          transform: [{ scale: pressed ? 0.99 : 1 }],
+          opacity: disabled ? 0.45 : pressed ? 0.94 : 1,
+          transform: [{ translateY: pressed ? 1 : 0 }, { scale: pressed ? 0.985 : 1 }],
         },
         style,
       ]}
@@ -66,7 +66,11 @@ export function Button({
         <ActivityIndicator color={colorsForVariant.foreground} />
       ) : (
         <View style={styles.content}>
-          {Icon ? <Icon color={colorsForVariant.foreground} size={19} strokeWidth={2.2} /> : null}
+          {Icon ? (
+            <View style={[styles.iconBadge, { backgroundColor: colorsForVariant.iconBackground }]}>
+              <Icon color={colorsForVariant.foreground} size={17} strokeWidth={2.25} />
+            </View>
+          ) : null}
           <AppText variant="label" color={colorsForVariant.foreground} style={styles.label}>
             {label}
           </AppText>
@@ -78,21 +82,26 @@ export function Button({
 
 const styles = StyleSheet.create({
   button: {
-    minHeight: 54,
+    minHeight: 56,
     width: "100%",
     alignItems: "center",
     justifyContent: "center",
     borderRadius: radius.lg,
-    borderWidth: 1,
+    borderWidth: StyleSheet.hairlineWidth,
     paddingHorizontal: spacing.lg,
   },
   content: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-    gap: spacing.xs,
+    gap: 10,
   },
-  label: {
-    fontSize: 15,
+  iconBadge: {
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    alignItems: "center",
+    justifyContent: "center",
   },
+  label: { fontSize: 14, lineHeight: 20 },
 });

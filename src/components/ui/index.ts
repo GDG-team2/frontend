@@ -4,6 +4,7 @@ export * from "./Card";
 export * from "./Chip";
 export * from "./MapPreview";
 export * from "./Metric";
+export * from "./ListRow";
 export * from "./Page";
 export * from "./SectionHeader";
 export * from "./StateView";

@@ -35,7 +35,9 @@ export default function RootLayout() {
 
   useEffect(() => {
     startMocking()
-      .catch(() => undefined)
+      .catch((error: unknown) => {
+        console.error("[MSW] Failed to start request mocking.", error);
+      })
       .finally(() => setMocksReady(true));
   }, []);
 
@@ -56,7 +58,7 @@ export default function RootLayout() {
       <SafeAreaProvider>
         <QueryClientProvider client={queryClient}>
           <Stack screenOptions={{ headerShown: false, animation: "slide_from_right", contentStyle: { backgroundColor: colors.canvas } }} />
-          <StatusBar style="dark" backgroundColor={colors.surface} />
+          <StatusBar style="dark" />
         </QueryClientProvider>
       </SafeAreaProvider>
     </GestureHandlerRootView>

@@ -1,4 +1,5 @@
 import { apiPost } from "@/services/api";
+import { saveAccessToken } from "@/services/session";
 import type { UserProfile } from "@/types/domain";
 
 export const kakaoStatus = {
@@ -9,10 +10,13 @@ export const kakaoStatus = {
 type KakaoAuthResponse = { accessToken: string; user: UserProfile };
 
 export async function signInWithKakao(): Promise<KakaoAuthResponse> {
+  let response: KakaoAuthResponse;
   if (!kakaoStatus.configured) {
-    return apiPost<KakaoAuthResponse>("/auth/kakao", { mode: "qa-bypass" });
+    response = await apiPost<KakaoAuthResponse>("/auth/kakao", { mode: "qa-bypass" });
+  } else {
+    // Native Kakao SDK access token plugs into this boundary once the Kakao app is issued.
+    response = await apiPost<KakaoAuthResponse>("/auth/kakao", { mode: "configured-adapter" });
   }
-
-  // Native Kakao SDK access token plugs into this boundary once the Kakao app is issued.
-  return apiPost<KakaoAuthResponse>("/auth/kakao", { mode: "configured-adapter" });
+  await saveAccessToken(response.accessToken);
+  return response;
 }

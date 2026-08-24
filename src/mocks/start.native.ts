@@ -1,12 +1,19 @@
-import { setupServer } from "msw/native";
+declare const require: (moduleId: string) => unknown;
 
-import { handlers } from "@/mocks/handlers";
+const mockGlobal = globalThis as typeof globalThis & { __ohakkomNativeMswStart?: Promise<void> };
 
-const server = setupServer(...handlers);
-let started = false;
+export function startMocking() {
+  if (process.env.EXPO_PUBLIC_USE_MSW === "false") return Promise.resolve();
 
-export async function startMocking() {
-  if (started) return;
-  server.listen({ onUnhandledRequest: "bypass" });
-  started = true;
+  mockGlobal.__ohakkomNativeMswStart ??= Promise.resolve().then(() => {
+    require("./polyfills.native");
+
+    const { setupServer } = require("msw/native") as typeof import("msw/native");
+    const { handlers } = require("./handlers") as typeof import("./handlers");
+    const server = setupServer(...handlers);
+
+    server.listen({ onUnhandledRequest: "bypass" });
+  });
+
+  return mockGlobal.__ohakkomNativeMswStart;
 }

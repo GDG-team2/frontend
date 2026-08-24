@@ -8,7 +8,7 @@ import { colors, font, radius, spacing } from "@/constants/theme";
 
 export default function ProfileSetupScreen() {
   const router = useRouter();
-  const [nickname, setNickname] = useState("은후");
+  const [nickname, setNickname] = useState("선우");
   return (
     <Page action={<Button label="취향 고르기" disabled={!nickname.trim()} onPress={() => router.push("/onboarding/preferences")} />}>
       <TopBar title="프로필 설정" />
@@ -47,7 +47,7 @@ const styles = StyleSheet.create({
   header: { marginTop: spacing.xxl, gap: spacing.xs },
   avatar: { width: 80, height: 80, borderRadius: 40, backgroundColor: colors.purpleSoft, alignItems: "center", justifyContent: "center", marginVertical: spacing.xxl, alignSelf: "center" },
   field: { gap: spacing.xs },
-  input: { height: 54, borderRadius: radius.lg, borderWidth: 1, borderColor: colors.borderStrong, paddingHorizontal: spacing.md, fontFamily: font.regular, fontSize: 16, color: colors.ink, backgroundColor: colors.white },
+  input: { height: 54, borderRadius: radius.lg, borderWidth: 1, borderColor: colors.borderStrong, paddingHorizontal: spacing.md, fontFamily: font.regular, fontSize: 16, lineHeight: 24, color: colors.ink, backgroundColor: colors.white },
   areaCard: { marginTop: spacing.xl, flexDirection: "row", alignItems: "center", gap: spacing.sm, padding: spacing.md },
   areaCopy: { flex: 1, gap: 2 },
 });

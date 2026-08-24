@@ -25,7 +25,7 @@ export function Chip({ label, selected, onPress, compact }: ChipProps) {
         pressed && styles.pressed,
       ]}
     >
-      <AppText variant={compact ? "caption" : "label"} color={selected ? colors.ink : colors.inkMuted}>
+      <AppText variant={compact ? "caption" : "label"} color={selected ? colors.white : colors.inkMuted}>
         {label}
       </AppText>
     </Pressable>
@@ -38,11 +38,11 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     paddingHorizontal: spacing.md,
     borderRadius: radius.round,
-    borderWidth: 1,
+    borderWidth: StyleSheet.hairlineWidth,
     borderColor: colors.border,
-    backgroundColor: colors.surface,
+    backgroundColor: colors.surfaceRaised,
   },
   compact: { minHeight: 32, paddingHorizontal: spacing.sm },
-  selected: { borderColor: colors.limeStrong, backgroundColor: colors.lime },
-  pressed: { opacity: 0.7 },
+  selected: { borderColor: colors.ink, backgroundColor: colors.ink },
+  pressed: { opacity: 0.9, transform: [{ translateY: 1 }, { scale: 0.985 }] },
 });

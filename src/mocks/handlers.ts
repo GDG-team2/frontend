@@ -1,9 +1,8 @@
 import { delay, http, HttpResponse } from "msw";
 
+import { API_BASE_URL } from "@/constants/api";
 import { mockBenefits, mockMission, mockNotifications, mockRanking, mockRecords, mockUser } from "@/mocks/data";
 import type { MockScenario } from "@/types/domain";
-
-export const API_BASE_URL = "https://api.ohakkom.test/api";
 
 function scenarioOf(request: Request): MockScenario {
   const value = request.headers.get("x-ohakkom-scenario");
