@@ -1,81 +1,102 @@
-import { useRouter } from "expo-router";
-import { Flag, MapPin, MoreHorizontal, Pause, Play, ShieldAlert } from "lucide-react-native";
+import { Redirect, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
-import { Pressable, StyleSheet, View } from "react-native";
-
-import { AppText, Button, Card, MapPreview, Page } from "@/components/ui";
-import { colors, layout, radius, shadow, spacing } from "@/constants/theme";
+import { Linking, View } from "react-native";
+import {
+  AppText,
+  Button,
+  Card,
+  Page,
+  StateView,
+  TopBar,
+} from "@/components/ui";
+import { colors, spacing } from "@/constants/theme";
+import { backend } from "@/services/backend";
+import { getMissionCoordinates } from "@/services/location";
+import { useMissionAction, useRecommendation } from "@/services/queries";
 
 export default function ActiveMissionScreen() {
   const router = useRouter();
-  const [seconds, setSeconds] = useState(7 * 60 + 24);
-  const [paused, setPaused] = useState(false);
+  const current = useRecommendation();
+  const [now, setNow] = useState(() => Date.now());
   useEffect(() => {
-    if (paused) return;
-    const timer = setInterval(() => setSeconds((value) => value + 1), 1000);
+    const timer = setInterval(() => setNow(Date.now()), 1000);
     return () => clearInterval(timer);
-  }, [paused]);
-
-  const elapsed = `${Math.floor(seconds / 60).toString().padStart(2, "0")}:${(seconds % 60).toString().padStart(2, "0")}`;
+  }, []);
+  const arrive = useMissionAction(async (mission) => {
+    if (mission.status !== "ARRIVED") {
+      if (mission.status !== "IN_PROGRESS")
+        throw new Error("먼저 미션을 출발해 주세요.");
+      await backend.arrive(Number(mission.id), await getMissionCoordinates());
+    }
+  });
+  if (current.isLoading)
+    return (
+      <Page>
+        <StateView type="loading" />
+      </Page>
+    );
+  if (current.isError)
+    return (
+      <Page>
+        <StateView type="error" onRetry={() => current.refetch()} />
+      </Page>
+    );
+  const mission = current.data;
+  if (!mission || mission.status === "READY")
+    return <Redirect href="/mission" />;
+  if (mission.status === "ARRIVED")
+    return <Redirect href="/mission/complete" />;
+  const seconds = mission.startedAt
+    ? Math.max(0, Math.floor((now - Date.parse(mission.startedAt)) / 1000))
+    : null;
+  const elapsed =
+    seconds == null || !Number.isFinite(seconds)
+      ? "—"
+      : `${Math.floor(seconds / 60)}분 ${seconds % 60}초`;
   return (
     <Page
-      testID="active-mission-screen"
-      scroll={false}
-      padded={false}
-      action={<Button label="도착했어요" icon={Flag} onPress={() => router.push("/mission/complete")} />}
-      contentStyle={styles.page}
+      action={
+        <Button
+          label="도착했어요"
+          loading={arrive.isPending}
+          onPress={() =>
+            arrive.mutate(undefined, {
+              onSuccess: () => router.replace("/mission/complete"),
+            })
+          }
+        />
+      }
     >
-      <MapPreview height={460} />
-      <View style={styles.topOverlay}>
-        <View style={styles.routeCard}>
-          <View style={styles.routeIcon}><MapPin size={19} color={colors.limeInk} /></View>
-          <View style={styles.routeCopy}>
-            <AppText variant="label">망원동 작은 정원</AppText>
-            <AppText variant="caption" color={colors.inkMuted}>앞으로 430m · 약 6분</AppText>
-          </View>
-          <Pressable accessibilityRole="button" accessibilityLabel="이동 메뉴" style={styles.moreButton} onPress={() => router.push("/mission/end")}><MoreHorizontal size={21} color={colors.ink} /></Pressable>
-        </View>
-      </View>
-      <View style={styles.sheet}>
-        <View style={styles.handle} />
-        <View style={styles.liveRow}>
-          <View>
-            <AppText variant="caption" color={colors.inkMuted}>이동 중</AppText>
-            <AppText variant="title">{elapsed}</AppText>
-          </View>
-          <Pressable accessibilityRole="button" accessibilityLabel={paused ? "다시 시작" : "잠시 멈춤"} onPress={() => setPaused((value) => !value)} style={[styles.pause, paused && styles.pauseActive]}>
-            {paused ? <Play size={20} color={colors.ink} /> : <Pause size={20} color={colors.ink} />}
-          </Pressable>
-        </View>
-        <View style={styles.progressTrack}><View style={styles.progressFill} /></View>
-        <View style={styles.statRow}>
-          <View><AppText variant="heading">350m</AppText><AppText variant="caption" color={colors.inkMuted}>걸어온 거리</AppText></View>
-          <View><AppText variant="heading">430m</AppText><AppText variant="caption" color={colors.inkMuted}>남은 거리</AppText></View>
-          <View><AppText variant="heading">42%</AppText><AppText variant="caption" color={colors.inkMuted}>진행</AppText></View>
-        </View>
-        <Card tone="subtle" style={styles.safetyRow} onPress={() => router.push("/mission/end")} accessibilityLabel="안전하게 중도 종료">
-          <ShieldAlert size={18} color={colors.inkMuted} />
-          <AppText variant="caption" color={colors.inkMuted}>불편하거나 위험하면 바로 돌아와도 괜찮아요.</AppText>
+      <TopBar title="산책 중" />
+      <View style={{ gap: spacing.lg, marginTop: spacing.xl }}>
+        <AppText variant="title">{mission.destination}</AppText>
+        <AppText>{mission.address}</AppText>
+        <Card tone="lime">
+          <AppText variant="heading">{elapsed}</AppText>
+          <AppText>출발 후 경과 시간</AppText>
         </Card>
+        <Button
+          label="지도에서 목적지 보기"
+          variant="secondary"
+          onPress={() =>
+            void Linking.openURL(
+              `https://map.kakao.com/link/map/${encodeURIComponent(mission.destination)},${mission.latitude},${mission.longitude}`,
+            )
+          }
+        />
+        <AppText color={colors.inkMuted}>
+          목적지에 도착한 뒤 눌러주세요. 현재 GPS 위치로 도착 여부를 확인해요.
+        </AppText>
+        {arrive.error ? (
+          <AppText color={colors.danger}>{arrive.error.message}</AppText>
+        ) : null}
+        <Button
+          label="미션 중단하기"
+          variant="secondary"
+          disabled={arrive.isPending}
+          onPress={() => router.push("/mission/end")}
+        />
       </View>
     </Page>
   );
 }
-
-const styles = StyleSheet.create({
-  page: { paddingBottom: 190 },
-  topOverlay: { position: "absolute", left: 0, right: 0, top: spacing.sm, paddingHorizontal: layout.screenPadding },
-  routeCard: { minHeight: 68, borderRadius: radius.lg, backgroundColor: colors.white, flexDirection: "row", alignItems: "center", gap: spacing.sm, padding: spacing.sm, ...shadow.card },
-  routeIcon: { width: 40, height: 40, borderRadius: 20, backgroundColor: colors.limeSoft, alignItems: "center", justifyContent: "center" },
-  routeCopy: { flex: 1 },
-  moreButton: { width: 44, height: 44, alignItems: "center", justifyContent: "center" },
-  sheet: { position: "absolute", left: 0, right: 0, bottom: 76, minHeight: 250, borderTopLeftRadius: radius.xxl, borderTopRightRadius: radius.xxl, backgroundColor: colors.white, padding: spacing.lg, ...shadow.floating },
-  handle: { width: 42, height: 4, borderRadius: 2, backgroundColor: colors.borderStrong, alignSelf: "center", marginBottom: spacing.md },
-  liveRow: { flexDirection: "row", alignItems: "center", justifyContent: "space-between" },
-  pause: { width: 48, height: 48, borderRadius: 24, alignItems: "center", justifyContent: "center", backgroundColor: colors.lime },
-  pauseActive: { backgroundColor: colors.purpleSoft },
-  progressTrack: { height: 8, borderRadius: 4, overflow: "hidden", backgroundColor: colors.chip, marginVertical: spacing.md },
-  progressFill: { width: "42%", height: 8, backgroundColor: colors.purple, borderRadius: 4 },
-  statRow: { flexDirection: "row", justifyContent: "space-between" },
-  safetyRow: { minHeight: 46, flexDirection: "row", alignItems: "center", gap: spacing.xs, padding: spacing.sm, marginTop: spacing.md },
-});

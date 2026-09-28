@@ -1,3 +1,5 @@
+import { USE_MSW } from "@/constants/api";
+import { UnavailableFeature } from "@/components/UnavailableFeature";
 import { useRouter } from "expo-router";
 import { CheckCircle2 } from "lucide-react-native";
 import { useState } from "react";
@@ -8,7 +10,7 @@ import { colors, font, radius, spacing } from "@/constants/theme";
 
 const reasons = ["장소가 없어요", "영업/개방 정보가 달라요", "위험한 경로예요", "부적절한 정보예요", "기타"];
 
-export default function ReportScreen() {
+function PreviewReportScreen() {
   const router = useRouter();
   const [reason, setReason] = useState("");
   const [detail, setDetail] = useState("");
@@ -34,3 +36,5 @@ const styles = StyleSheet.create({
   success: { flex: 1, alignItems: "center", justifyContent: "center", gap: spacing.sm, paddingHorizontal: spacing.lg },
   successIcon: { width: 88, height: 88, borderRadius: 44, backgroundColor: colors.successSoft, alignItems: "center", justifyContent: "center", marginBottom: spacing.sm },
 });
+
+export default function Screen() { return USE_MSW ? <PreviewReportScreen /> : <UnavailableFeature title="장소 신고" />; }

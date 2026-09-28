@@ -1,26 +1,38 @@
-# 오하꼼 앱 구조
+# 백엔드 연동
 
-## 런타임
+`api.json`을 기준으로 `/api/v1`의 모든 13개 연산을 연결합니다. 타입은 `bun run api:types`로 재생성합니다. OpenAPI 응답 필드에 `required`가 없어 생성 타입은 optional이며, 화면 어댑터에서 사용자·미션 식별자와 목적지·상태를 확인합니다.
 
-- Expo SDK 57 / React Native 0.86 / React 19 / TypeScript 6
-- Bun 1.3.14 단일 패키지 매니저
-- Expo Router 파일 기반 라우팅
-- TanStack Query 서버 상태, Zustand 로컬 UX/QA 상태
-- MSW 2 (`msw/native`, `msw/browser`) 백엔드 및 Kakao 인증 대체
+## 연결과 인증
 
-## 통합 경계
+- `src/constants/api.ts`: `EXPO_PUBLIC_API_BASE_URL`은 `/api/v1`을 포함합니다. 기본값은 명세의 `http://localhost:8081/api/v1`입니다.
+- `EXPO_PUBLIC_USE_MSW=true`일 때만 MSW와 QA 로그인/위치를 사용합니다. 실서버 요청에는 QA 헤더를 보내지 않습니다.
+- 이메일 로그인과 회원가입을 사용합니다. 가입 성공 후 로그인하며 비밀번호를 저장하지 않습니다. 카카오 인증 API는 명세에 없습니다.
+- 네이티브 토큰은 SecureStore, 웹 토큰은 AsyncStorage에 저장합니다. QA/실서버 및 API 주소마다 토큰 키를 분리합니다. 웹에서는 같은 출처 스크립트가 토큰을 읽을 수 있으므로 배포 시 XSS 방어가 필요합니다.
+- 앱 시작 시 저장 토큰을 복원하고 API 요청에 `Authorization: Bearer …`를 전송합니다. 401이면 토큰·앱 상태·쿼리 캐시를 정리하고 로그인으로 이동합니다. 로그인 실패 자체는 기존 세션을 만료시키지 않습니다.
+- refreshToken은 응답에 있지만 재발급 API가 없으므로 자동 갱신하지 않습니다. 로그아웃 역시 서버 API가 없어 로컬 세션을 제거합니다.
+- 네트워크 요청 제한 시간은 15초이며, 서버 메시지·통신 오류·시간 초과를 표시합니다. 변경 요청은 자동 재시도하지 않습니다.
 
-- `src/services/kakao.ts`: Kakao 앱 키 감지와 로그인 어댑터 경계.
-- `src/components/ui/MapPreview.tsx`: Kakao 지도 키가 없을 때 Figma 지도와 모의 좌표를 사용.
-- `src/services/location.ts`: 실제 위치 권한 요청과 web QA 우회를 분리.
-- `src/services/api.ts`: API base URL, MSW 시나리오 헤더, 오류 정규화.
+## 미션
 
-## 실제 백엔드/Kakao 전환
+현재 상태는 `GET /missions/current`로 복구합니다. 화면 진입/조회 재시도는 미션을 생성하지 않습니다. 사용자가 추천 버튼을 누를 때만 실제 위치를 읽어 `POST /missions/recommendation`을 호출합니다.
 
-1. `EXPO_PUBLIC_USE_MSW=false` 설정.
-2. API base URL을 환경별 값으로 교체.
-3. Kakao 네이티브 앱 키/JavaScript 키를 EAS 환경 변수로 등록.
-4. Kakao 로그인 SDK 어댑터에서 access token을 받은 뒤 `/auth/kakao`로 전달.
-5. `MapPreview`의 fallback을 Kakao 지도 native/web 구현으로 대체.
+`READY → start → IN_PROGRESS → arrive → ARRIVED → complete` 순서입니다. 모든 변경은 먼저 현재 미션을 다시 조회하고 서버의 숫자 ID를 사용합니다. 도착 요청은 새 GPS 좌표를 보내고 반경 검증은 서버가 수행합니다. 완료 요청은 `afterSurveyScore`를 보내며 실제 걸음 측정이 없어 선택 필드 `stepCount`를 꾸며 보내지 않습니다. 미션 중단은 `abort`를 호출합니다. 시간 초과 후 재시도도 현재 상태부터 재조회합니다.
 
-화면과 query key는 유지하므로 통합 시 UI 재작업은 필요하지 않다.
+완료 결과의 포인트·스트릭·랭킹 점수·새 배지를 표시하고 관련 캐시를 갱신합니다. 서버가 현재 미션 조회에서 거리/시간 추정치를 주지 않으므로 추천 직후 메모리 캐시에만 유지하며, 앱 재시작 후에는 `—`로 표시합니다. 지도 SDK는 연결하지 않았으며 목적지의 카카오 지도 링크를 제공합니다.
+
+## 설정과 보상
+
+- 프로필: 이름·동네·보유 포인트·스트릭·누적 완료 수.
+- 포인트: 거래 내역과 페이지 이동 (`page`, `size`, `hasNext`).
+- 배지: 서버 도감과 획득 여부/개수.
+- 랭킹: 서버 동네·주간 기간·내 참여 상태/점수/순위·리더보드. 점수를 외출 횟수로 바꾸지 않습니다.
+- 알림/공개 설정: 사용자가 선택한 항목만 PATCH하고 성공 응답만 저장합니다. GET 설정 API가 없어 아직 확인하지 못한 값은 '확인 전'으로 표시합니다. 다른 기기에서 바꾼 값까지 동기화할 수는 없습니다.
+- `quietStart`/`quietEnd`는 OpenAPI의 `LocalTime` 객체 스키마(`hour`, `minute`, `second`, `nano`)에 맞춰 전송합니다. 명세의 예시는 문자열(`07:00:00`)이라 실제 서버와 직렬화 형식 확인이 필요합니다. 형식을 추측해 이중 요청하지 않습니다.
+
+## 미지원 화면
+
+카카오 로그인, 프로필 수정, 기록/알림 내역, 저장한 지도, 인사이트, 제휴 혜택, 신고, 데이터 삭제/내보내기, 시간/기분별 추천 조건은 API가 없습니다. 실제 모드에서는 준비 중으로 표시하고 가상의 URL로 요청하거나 저장 성공을 표시하지 않습니다. 일부 기존 디자인 미리보기는 명시적 MSW 모드에서만 유지합니다.
+
+## 검증
+
+`bun test`는 실제 HTTP 클라이언트와 백엔드 서비스를 MSW에 연결합니다. `api.json`으로 메서드/경로/필수 요청 필드/응답 스키마를 검사하고 모든 연산의 커버리지를 확인합니다. 미션 복구·출발·잘못된 도착·완료·중복 제출·중단·포인트 반영·페이지 이동·401·503·빈 목록·타임아웃을 검증합니다. `bun run typecheck`, `bun run lint`, Expo 전체 플랫폼 export도 수행합니다. 실행 중인 백엔드가 없으므로 실제 DB/인증/GPS 반경/서버 CORS에 대한 검증은 별도로 필요합니다.

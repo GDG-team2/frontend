@@ -1,3 +1,5 @@
+import { USE_MSW } from "@/constants/api";
+import { UnavailableFeature } from "@/components/UnavailableFeature";
 import { useRouter } from "expo-router";
 import { Camera, MapPin, UserRound } from "lucide-react-native";
 import { useState } from "react";
@@ -6,7 +8,7 @@ import { Pressable, StyleSheet, TextInput, View } from "react-native";
 import { AppText, Button, Page, TopBar } from "@/components/ui";
 import { colors, font, radius, spacing } from "@/constants/theme";
 
-export default function EditProfileScreen() {
+function PreviewEditProfileScreen() {
   const router = useRouter();
   const [nickname, setNickname] = useState("선우");
   const [bio, setBio] = useState("결정은 작게, 산책은 가볍게.");
@@ -33,3 +35,5 @@ const styles = StyleSheet.create({
   area: { height: 54, flexDirection: "row", alignItems: "center", gap: spacing.xs, borderRadius: radius.lg, borderWidth: 1, borderColor: colors.borderStrong, paddingHorizontal: spacing.md },
   areaCopy: { flex: 1 },
 });
+
+export default function Screen() { return USE_MSW ? <PreviewEditProfileScreen /> : <UnavailableFeature title="프로필 편집" />; }

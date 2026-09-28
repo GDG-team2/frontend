@@ -1,3 +1,5 @@
+import { USE_MSW } from "@/constants/api";
+import { UnavailableFeature } from "@/components/UnavailableFeature";
 import { Database, Download, LocateFixed, MapPinned, ShieldCheck, Trash2 } from "lucide-react-native";
 import { StyleSheet, View } from "react-native";
 
@@ -5,7 +7,7 @@ import { AppText, Button, Card, ListRow, Page, ToggleRow, TopBar } from "@/compo
 import { colors, spacing } from "@/constants/theme";
 import { useAppStore } from "@/store/app-store";
 
-export default function PrivacyScreen() {
+function PreviewPrivacyScreen() {
   const locationGranted = useAppStore((state) => state.locationGranted);
   return (
     <Page>
@@ -33,3 +35,5 @@ const styles = StyleSheet.create({
   label: { marginTop: spacing.xl, marginBottom: spacing.xs },
   group: { paddingVertical: 0, marginBottom: spacing.sm },
 });
+
+export default function Screen() { return USE_MSW ? <PreviewPrivacyScreen /> : <UnavailableFeature title="개인정보와 권한" />; }

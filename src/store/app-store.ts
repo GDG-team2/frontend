@@ -2,9 +2,13 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 
+import type { UserSettingsUpdateRequest } from "@/types/api";
+
 import type { MockScenario } from "@/types/domain";
 
 type AppState = {
+  settings: UserSettingsUpdateRequest;
+  saveSettings: (value: UserSettingsUpdateRequest) => void;
   authenticated: boolean;
   onboardingComplete: boolean;
   locationGranted: boolean;
@@ -23,6 +27,7 @@ type AppState = {
 };
 
 const initialState = {
+  settings: {} as UserSettingsUpdateRequest,
   authenticated: false,
   onboardingComplete: false,
   locationGranted: false,
@@ -36,20 +41,28 @@ export const useAppStore = create<AppState>()(
   persist(
     (set) => ({
       ...initialState,
+      saveSettings: (value) =>
+        set((state) => ({
+          settings: { ...state.settings, ...value },
+          rankingOptIn: value.rankingSetting ?? state.rankingOptIn,
+          notificationsEnabled: value.allAlarm ?? state.notificationsEnabled,
+        })),
       setAuthenticated: (authenticated) => set({ authenticated }),
-      completeOnboarding: () => set({ onboardingComplete: true, authenticated: true }),
+      completeOnboarding: () =>
+        set({ onboardingComplete: true, authenticated: true }),
       setLocationGranted: (locationGranted) => set({ locationGranted }),
       setActiveMissionId: (activeMissionId) => set({ activeMissionId }),
       setQaScenario: (qaScenario) => set({ qaScenario }),
       setRankingOptIn: (rankingOptIn) => set({ rankingOptIn }),
-      setNotificationsEnabled: (notificationsEnabled) => set({ notificationsEnabled }),
+      setNotificationsEnabled: (notificationsEnabled) =>
+        set({ notificationsEnabled }),
       reset: () => set(initialState),
     }),
     {
       name: "ohakkom-app-state",
       storage: createJSONStorage(() => AsyncStorage),
       partialize: (state) => ({
-        authenticated: state.authenticated,
+        settings: state.settings,
         onboardingComplete: state.onboardingComplete,
         locationGranted: state.locationGranted,
         qaScenario: state.qaScenario,

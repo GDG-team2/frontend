@@ -1,3 +1,5 @@
+import { USE_MSW } from "@/constants/api";
+import { UnavailableFeature } from "@/components/UnavailableFeature";
 import { useRouter } from "expo-router";
 import { Mic, SlidersHorizontal } from "lucide-react-native";
 import { useState } from "react";
@@ -12,7 +14,7 @@ const groups = [
   { title: "활동", values: ["걷기", "찾기", "사진", "작은 보상"] },
 ];
 
-export default function MissionConditionsScreen() {
+function PreviewMissionConditionsScreen() {
   const router = useRouter();
   const [prompt, setPrompt] = useState("조용한 곳에서 20분만 걷고 싶어");
   const [selected, setSelected] = useState(["20분", "조용한", "걷기"]);
@@ -90,3 +92,5 @@ const styles = StyleSheet.create({
   optionGroup: { gap: spacing.xs, paddingTop: spacing.xxs },
   chips: { flexDirection: "row", flexWrap: "wrap", gap: spacing.xs },
 });
+
+export default function Screen() { return USE_MSW ? <PreviewMissionConditionsScreen /> : <UnavailableFeature title="미션 조건" />; }

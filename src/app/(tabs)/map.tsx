@@ -1,3 +1,5 @@
+import { USE_MSW } from "@/constants/api";
+import { UnavailableFeature } from "@/components/UnavailableFeature";
 import { useRouter } from "expo-router";
 import { Bookmark, ChevronRight, MapPinned, Navigation } from "lucide-react-native";
 import { StyleSheet, View } from "react-native";
@@ -10,7 +12,7 @@ const places = [
   { title: "연남동 산책길", meta: "1번 방문 · 마지막 8월 20일" },
 ];
 
-export default function PersonalMapScreen() {
+function PreviewPersonalMapScreen() {
   const router = useRouter();
   return (
     <Page testID="map-screen">
@@ -60,3 +62,5 @@ const styles = StyleSheet.create({
   placeIcon: { width: 40, height: 40, borderRadius: 20, backgroundColor: colors.limeSoft, alignItems: "center", justifyContent: "center" },
   placeCopy: { flex: 1, gap: 2 },
 });
+
+export default function Screen() { return USE_MSW ? <PreviewPersonalMapScreen /> : <UnavailableFeature title="내 지도" />; }

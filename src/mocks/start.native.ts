@@ -3,7 +3,7 @@ declare const require: (moduleId: string) => unknown;
 const mockGlobal = globalThis as typeof globalThis & { __ohakkomNativeMswStart?: Promise<void> };
 
 export function startMocking() {
-  if (process.env.EXPO_PUBLIC_USE_MSW === "false") return Promise.resolve();
+  if (process.env.EXPO_PUBLIC_USE_MSW !== "true") return Promise.resolve();
 
   mockGlobal.__ohakkomNativeMswStart ??= Promise.resolve().then(() => {
     require("./polyfills.native");

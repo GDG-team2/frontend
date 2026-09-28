@@ -1,3 +1,5 @@
+import { USE_MSW } from "@/constants/api";
+import { UnavailableFeature } from "@/components/UnavailableFeature";
 import { ArrowUpRight, Clock3, LockKeyhole, Sparkles, SunMedium } from "lucide-react-native";
 import { StyleSheet, useWindowDimensions, View } from "react-native";
 
@@ -5,7 +7,7 @@ import { WeeklyBars } from "@/components/WeeklyBars";
 import { AppText, Card, Page, TopBar } from "@/components/ui";
 import { colors, spacing } from "@/constants/theme";
 
-export default function InsightsScreen() {
+function PreviewInsightsScreen() {
   const { width } = useWindowDimensions();
   const narrow = width < 360;
 
@@ -44,3 +46,5 @@ const styles = StyleSheet.create({
   privacy: { flexDirection: "row", gap: spacing.xs, alignItems: "center", marginTop: spacing.sm, padding: spacing.md },
   privacyCopy: { flex: 1 },
 });
+
+export default function Screen() { return USE_MSW ? <PreviewInsightsScreen /> : <UnavailableFeature title="인사이트" />; }

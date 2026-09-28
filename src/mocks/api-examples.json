@@ -1,0 +1,352 @@
+{
+  "MissionStartResponse": {
+    "missionId": 1001,
+    "status": "IN_PROGRESS",
+    "startedAt": "2026-09-28T09:00:00Z",
+    "message": "산책 미션을 시작했습니다. 안전하게 이동하세요!"
+  },
+  "MissionCompleteRequest": {
+    "afterSurveyScore": 5,
+    "stepCount": 1850
+  },
+  "BadgeInfo": {
+    "badgeId": 2,
+    "badgeName": "공원 탐험가",
+    "description": "공원 카테고리의 장소를 3번 방문했습니다.",
+    "iconUrl": "https://example.com/badges/2.png"
+  },
+  "MissionCompleteResponse": {
+    "missionId": 1001,
+    "status": "COMPLETED",
+    "completedAt": "2026-09-28T09:00:00Z",
+    "stepCount": 1850,
+    "reward": {
+      "earnedPoint": 50,
+      "currentTotalPoint": 1550
+    },
+    "ranking": {
+      "isParticipant": true,
+      "earnedScore": 100,
+      "currentWeeklyScore": 500
+    },
+    "streak": {
+      "streakNow": 6,
+      "isStreakMaintained": true
+    },
+    "newBadges": [
+      {
+        "badgeId": 2,
+        "badgeName": "공원 탐험가",
+        "description": "공원 카테고리의 장소를 3번 방문했습니다.",
+        "iconUrl": "https://example.com/badges/2.png"
+      }
+    ]
+  },
+  "RankingInfo": {
+    "isParticipant": true,
+    "earnedScore": 100,
+    "currentWeeklyScore": 500
+  },
+  "RewardInfo": {
+    "earnedPoint": 50,
+    "currentTotalPoint": 1550
+  },
+  "StreakInfo": {
+    "streakNow": 6,
+    "isStreakMaintained": true
+  },
+  "MissionArriveRequest": {
+    "latitude": 37.49901,
+    "longitude": 127.02801
+  },
+  "MissionArriveResponse": {
+    "missionId": 1001,
+    "status": "ARRIVED",
+    "arrivedAt": "2026-09-28T09:00:00Z",
+    "message": "목적지에 도착했습니다! 주변을 둘러보세요."
+  },
+  "MissionAbortResponse": {
+    "missionId": 1001,
+    "status": "ABORTED",
+    "abortedAt": "2026-09-28T09:00:00Z",
+    "message": "산책 미션을 포기했습니다."
+  },
+  "MissionRecommendRequest": {
+    "latitude": 37.498095,
+    "longitude": 127.02761
+  },
+  "MissionRecommendResponse": {
+    "missionId": 1001,
+    "status": "READY",
+    "place": {
+      "placeId": 2001,
+      "kakaoPlaceId": "18577297",
+      "name": "역삼동 근린공원",
+      "category": "공원",
+      "roadAddress": "서울특별시 강남구 역삼로 123",
+      "latitude": 37.499,
+      "longitude": 127.028
+    },
+    "distanceMeters": 450,
+    "estDurationMinutes": 10,
+    "estRewardPoint": 50
+  },
+  "PlaceInfo": {
+    "placeId": 2001,
+    "kakaoPlaceId": "18577297",
+    "name": "역삼동 근린공원",
+    "category": "공원",
+    "roadAddress": "서울특별시 강남구 역삼로 123",
+    "latitude": 37.499,
+    "longitude": 127.028
+  },
+  "SignupRequest": {
+    "email": "user@example.com",
+    "password": "password123!",
+    "nickname": "walking_master",
+    "birth": "1990-01-01",
+    "regionCode": "1168010100"
+  },
+  "SignupResponse": {
+    "userUuid": "123e4567-e89b-12d3-a456-426614174000",
+    "nickname": "walking_master",
+    "message": "회원가입이 완료되었습니다."
+  },
+  "LoginRequest": {
+    "email": "user@example.com",
+    "password": "password123!"
+  },
+  "LoginResponse": {
+    "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+    "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+    "userUuid": "123e4567-e89b-12d3-a456-426614174000",
+    "nickname": "walking_master"
+  },
+  "LocalTime": {
+    "hour": 0,
+    "minute": 0,
+    "second": 0,
+    "nano": 0
+  },
+  "UserSettingsUpdateRequest": {
+    "allAlarm": true,
+    "startAlarm": true,
+    "missionAlarm": true,
+    "insightAlarm": true,
+    "rewardAlarm": true,
+    "quietStart": {
+      "hour": 0,
+      "minute": 0,
+      "second": 0,
+      "nano": 0
+    },
+    "quietEnd": {
+      "hour": 0,
+      "minute": 0,
+      "second": 0,
+      "nano": 0
+    },
+    "rankingSetting": true,
+    "nameSetting": true,
+    "placeSetting": true,
+    "friendSetting": true
+  },
+  "UserSettingsUpdateResponse": {
+    "userUuid": "123e4567-e89b-12d3-a456-426614174000",
+    "allAlarm": false,
+    "startAlarm": false,
+    "missionAlarm": false,
+    "insightAlarm": false,
+    "rewardAlarm": false,
+    "quietStart": {
+      "hour": 0,
+      "minute": 0,
+      "second": 0,
+      "nano": 0
+    },
+    "quietEnd": {
+      "hour": 0,
+      "minute": 0,
+      "second": 0,
+      "nano": 0
+    },
+    "rankingSetting": false,
+    "nameSetting": false,
+    "placeSetting": false,
+    "friendSetting": false,
+    "updatedAt": "2026-09-28T09:00:00Z",
+    "message": "설정이 성공적으로 변경되었습니다."
+  },
+  "AssetInfo": {
+    "currentPoint": 1500
+  },
+  "RegionInfo": {
+    "regionCode": "1168010100",
+    "regionName": "서울특별시 강남구 역삼동"
+  },
+  "StatsInfo": {
+    "totalCompletedMissions": 42
+  },
+  "UserProfileResponse": {
+    "userUuid": "123e4567-e89b-12d3-a456-426614174000",
+    "email": "user@example.com",
+    "nickname": "walking_master",
+    "profileImageUrl": "https://cdn.walkmission.com/profiles/u1.png",
+    "region": {
+      "regionCode": "1168010100",
+      "regionName": "서울특별시 강남구 역삼동"
+    },
+    "asset": {
+      "currentPoint": 1500
+    },
+    "streak": {
+      "streakNow": 6,
+      "isStreakMaintained": true
+    },
+    "representativeBadge": {
+      "badgeId": 2,
+      "badgeName": "공원 탐험가",
+      "description": "공원 카테고리의 장소를 3번 방문했습니다.",
+      "iconUrl": "https://example.com/badges/2.png"
+    },
+    "stats": {
+      "totalCompletedMissions": 42
+    }
+  },
+  "PaginationInfo": {
+    "currentPage": 0,
+    "pageSize": 20,
+    "totalPages": 5,
+    "totalElements": 95,
+    "hasNext": true
+  },
+  "PointHistoryEntry": {
+    "historyId": 1,
+    "type": "EARN",
+    "amount": 50,
+    "description": "미션 완주 보상",
+    "createdAt": "2026-09-28T09:00:00Z"
+  },
+  "PointHistoryResponse": {
+    "currentPoint": 1500,
+    "history": [
+      {
+        "historyId": 1,
+        "type": "EARN",
+        "amount": 50,
+        "description": "미션 완주 보상",
+        "createdAt": "2026-09-28T09:00:00Z"
+      }
+    ],
+    "pagination": {
+      "currentPage": 0,
+      "pageSize": 20,
+      "totalPages": 5,
+      "totalElements": 95,
+      "hasNext": true
+    }
+  },
+  "BadgeDetail": {
+    "badgeId": 1,
+    "badgeName": "첫 산책 마스터",
+    "description": "첫 산책을 무사히 완료했습니다.",
+    "iconUrl": "https://example.com/badges/1.png",
+    "isAcquired": true,
+    "isRepresentative": true,
+    "acquiredAt": "2026-09-28T09:00:00Z"
+  },
+  "BadgeListResponse": {
+    "summary": {
+      "totalCount": 20,
+      "acquiredCount": 5
+    },
+    "badges": [
+      {
+        "badgeId": 1,
+        "badgeName": "첫 산책 마스터",
+        "description": "첫 산책을 무사히 완료했습니다.",
+        "iconUrl": "https://example.com/badges/1.png",
+        "isAcquired": true,
+        "isRepresentative": true,
+        "acquiredAt": "2026-09-28T09:00:00Z"
+      }
+    ]
+  },
+  "BadgeSummary": {
+    "totalCount": 20,
+    "acquiredCount": 5
+  },
+  "RankingEntry": {
+    "isParticipating": true,
+    "userUuid": "123e4567-e89b-12d3-a456-426614174000",
+    "nickname": "walking_master",
+    "profileImageUrl": "https://example.com/profile.png",
+    "rank": 1,
+    "score": 1250
+  },
+  "RegionRankingResponse": {
+    "region": {
+      "regionCode": "1168010100",
+      "regionName": "서울특별시 강남구 역삼동"
+    },
+    "weekPeriod": {
+      "startDate": "2023-10-23",
+      "endDate": "2023-10-29"
+    },
+    "myRanking": {
+      "isParticipating": true,
+      "userUuid": "123e4567-e89b-12d3-a456-426614174000",
+      "nickname": "walking_master",
+      "profileImageUrl": "https://example.com/profile.png",
+      "rank": 1,
+      "score": 1250
+    },
+    "leaderboard": [
+      {
+        "isParticipating": true,
+        "userUuid": "123e4567-e89b-12d3-a456-426614174000",
+        "nickname": "walking_master",
+        "profileImageUrl": "https://example.com/profile.png",
+        "rank": 1,
+        "score": 1250
+      }
+    ]
+  },
+  "WeekPeriodInfo": {
+    "startDate": "2023-10-23",
+    "endDate": "2023-10-29"
+  },
+  "ActiveMissionInfo": {
+    "missionId": 1001,
+    "status": "IN_PROGRESS",
+    "startedAt": "2026-09-28T09:00:00Z",
+    "place": {
+      "placeId": 2001,
+      "kakaoPlaceId": "18577297",
+      "name": "역삼동 근린공원",
+      "category": "공원",
+      "roadAddress": "서울특별시 강남구 역삼로 123",
+      "latitude": 37.499,
+      "longitude": 127.028
+    },
+    "estRewardPoint": 50
+  },
+  "CurrentMissionResponse": {
+    "hasActiveMission": true,
+    "mission": {
+      "missionId": 1001,
+      "status": "IN_PROGRESS",
+      "startedAt": "2026-09-28T09:00:00Z",
+      "place": {
+        "placeId": 2001,
+        "kakaoPlaceId": "18577297",
+        "name": "역삼동 근린공원",
+        "category": "공원",
+        "roadAddress": "서울특별시 강남구 역삼로 123",
+        "latitude": 37.499,
+        "longitude": 127.028
+      },
+      "estRewardPoint": 50
+    }
+  }
+}

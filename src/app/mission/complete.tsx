@@ -1,73 +1,125 @@
-import { useMutation } from "@tanstack/react-query";
-import { useRouter } from "expo-router";
-import { Bookmark, Check, Star } from "lucide-react-native";
+import { Redirect, useRouter } from "expo-router";
 import { useState } from "react";
-import { Pressable, StyleSheet, View } from "react-native";
-
-import { AppText, Button, Card, Metric, Page, TopBar } from "@/components/ui";
-import { colors, radius, spacing } from "@/constants/theme";
-import { apiPost } from "@/services/api";
-import { useAppStore } from "@/store/app-store";
+import { View } from "react-native";
+import {
+  AppText,
+  Button,
+  Card,
+  Chip,
+  Page,
+  StateView,
+  TopBar,
+} from "@/components/ui";
+import { colors, spacing } from "@/constants/theme";
+import { backend } from "@/services/backend";
+import { useMissionAction, useRecommendation } from "@/services/queries";
 
 export default function CompleteMissionScreen() {
   const router = useRouter();
+  const current = useRecommendation();
   const [rating, setRating] = useState(5);
-  const setActiveMissionId = useAppStore((state) => state.setActiveMissionId);
-  const complete = useMutation({
-    mutationFn: () => apiPost("/missions/mission-01/complete", { rating }),
-    onSuccess: () => {
-      setActiveMissionId(null);
-      router.replace("/(tabs)/history");
-    },
+  const complete = useMissionAction(async (mission) => {
+    if (mission.status !== "ARRIVED")
+      throw new Error("목적지 도착 확인을 먼저 해주세요.");
+    return backend.complete(Number(mission.id), { afterSurveyScore: rating });
   });
-
+  if (complete.data)
+    return (
+      <Page
+        action={
+          <Button label="홈으로" onPress={() => router.replace("/(tabs)")} />
+        }
+      >
+        <TopBar title="미션 완료" />
+        <AppText variant="title">오늘의 산책을 완료했어요.</AppText>
+        <Card tone="lime">
+          <AppText variant="heading">
+            +{complete.data.reward?.earnedPoint ?? 0} P
+          </AppText>
+          <AppText>
+            보유 포인트 {complete.data.reward?.currentTotalPoint ?? 0} P
+          </AppText>
+          <AppText>{complete.data.streak?.streakNow ?? 0}일 연속 산책</AppText>
+          {complete.data.ranking?.isParticipant ? (
+            <AppText>
+              이번 주 랭킹 점수 {complete.data.ranking.currentWeeklyScore ?? 0}
+            </AppText>
+          ) : null}
+        </Card>
+        {complete.data.newBadges?.map((badge) => (
+          <Card key={badge.badgeId}>
+            <AppText>{badge.badgeName}</AppText>
+            <AppText>{badge.description}</AppText>
+          </Card>
+        ))}
+      </Page>
+    );
+  if (current.isLoading)
+    return (
+      <Page>
+        <StateView type="loading" />
+      </Page>
+    );
+  if (current.isError)
+    return (
+      <Page>
+        <StateView type="error" onRetry={() => current.refetch()} />
+      </Page>
+    );
+  if (!current.data)
+    return (
+      <Page>
+        <TopBar title="미션 상태" />
+        <StateView
+          type="empty"
+          title="완료할 미션이 없어요"
+          description="이미 제출했다면 포인트 내역에서 결과를 확인해 주세요."
+          actionLabel="포인트 내역 확인"
+          onAction={() => router.replace("/benefits")}
+        />
+        {complete.error ? (
+          <AppText color={colors.danger}>{complete.error.message}</AppText>
+        ) : null}
+      </Page>
+    );
+  if (current.data.status !== "ARRIVED") return <Redirect href="/mission" />;
   return (
-    <Page action={<Button label="외출 기록 완료" loading={complete.isPending} onPress={() => complete.mutate()} />}>
-      <TopBar title="도착 · 기록" />
-      <View style={styles.successHalo}>
-        <View style={styles.successInner}><Check size={44} strokeWidth={3} color={colors.ink} /></View>
-      </View>
-      <View style={styles.header}>
-        <AppText variant="display" align="center">오늘의 한 칸,{"\n"}완료했어요.</AppText>
-        <AppText color={colors.inkMuted} align="center">작은 정원까지 무사히 도착했어요. 지금의 기분만 가볍게 남겨주세요.</AppText>
-      </View>
-      <Card tone="subtle" style={styles.metrics}>
-        <Metric value="18분" label="걸린 시간" />
-        <View style={styles.metricDivider} />
-        <Metric value="0.8km" label="걸은 거리" />
-        <View style={styles.metricDivider} />
-        <Metric value="+120P" label="받은 보상" accent={colors.purpleStrong} />
-      </Card>
-      <View style={styles.ratingSection}>
-        <AppText variant="heading" align="center">이번 외출은 어땠나요?</AppText>
-        <View style={styles.stars}>
-          {[1, 2, 3, 4, 5].map((value) => (
-            <Pressable key={value} accessibilityRole="button" accessibilityLabel={`${value}점`} accessibilityState={{ selected: rating === value }} onPress={() => setRating(value)} style={styles.starButton}>
-              <Star size={31} color={value <= rating ? colors.purple : colors.borderStrong} fill={value <= rating ? colors.purple : colors.transparent} />
-            </Pressable>
+    <Page
+      action={
+        <Button
+          label="설문 제출하고 보상 받기"
+          loading={complete.isPending}
+          onPress={() => complete.mutate()}
+        />
+      }
+    >
+      <TopBar title="도착 · 설문" />
+      <View style={{ gap: spacing.lg, marginTop: spacing.xl }}>
+        <AppText variant="title">
+          {current.data.destination}에 도착했어요.
+        </AppText>
+        <AppText>이번 산책은 어땠나요?</AppText>
+        <View
+          style={{ flexDirection: "row", flexWrap: "wrap", gap: spacing.xs }}
+        >
+          {[1, 2, 3, 4, 5].map((score) => (
+            <Chip
+              key={score}
+              label={`${score}점`}
+              selected={rating === score}
+              onPress={() => {
+                if (!complete.isPending) setRating(score);
+              }}
+            />
           ))}
         </View>
-        <AppText variant="caption" color={colors.inkMuted} align="center">{rating >= 4 ? "나오기 잘한 것 같아요" : "다음엔 더 편한 미션으로 골라볼게요"}</AppText>
+        <AppText color={colors.inkMuted}>
+          설문을 제출하면 미션을 완료하고 보상을 정산해요.
+        </AppText>
+        {complete.error ? (
+          <AppText color={colors.danger}>{complete.error.message}</AppText>
+        ) : null}
       </View>
-      <Card tone="lime" style={styles.saveCard}>
-        <View style={styles.saveIcon}><Bookmark size={19} color={colors.limeInk} /></View>
-        <View style={styles.saveCopy}><AppText variant="label" color={colors.limeInk}>망원동 작은 정원을 내 지도에 저장</AppText><AppText variant="caption" color={colors.limeInk}>다음에 다시 갈 수 있게 표시해둘게요.</AppText></View>
-      </Card>
-      {complete.isError ? <AppText variant="caption" color={colors.danger} align="center">기록을 저장하지 못했어요. 다시 눌러주세요.</AppText> : null}
     </Page>
   );
 }
-
-const styles = StyleSheet.create({
-  successHalo: { width: 170, height: 170, borderRadius: 85, backgroundColor: colors.limeFaint, alignSelf: "center", alignItems: "center", justifyContent: "center", marginTop: spacing.lg },
-  successInner: { width: 100, height: 100, borderRadius: 50, backgroundColor: colors.lime, alignItems: "center", justifyContent: "center" },
-  header: { gap: spacing.xs, marginTop: spacing.md, paddingHorizontal: spacing.sm },
-  metrics: { flexDirection: "row", alignItems: "center", marginTop: spacing.lg, paddingHorizontal: spacing.xs },
-  metricDivider: { width: StyleSheet.hairlineWidth, height: 34, backgroundColor: colors.borderStrong },
-  ratingSection: { gap: spacing.sm, marginTop: spacing.lg },
-  stars: { flexDirection: "row", alignItems: "center", justifyContent: "center" },
-  starButton: { width: 48, height: 48, alignItems: "center", justifyContent: "center" },
-  saveCard: { marginTop: spacing.xl, flexDirection: "row", gap: spacing.sm, padding: spacing.md },
-  saveIcon: { width: 40, height: 40, borderRadius: radius.round, backgroundColor: colors.white, alignItems: "center", justifyContent: "center" },
-  saveCopy: { flex: 1, gap: 2 },
-});

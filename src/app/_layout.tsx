@@ -5,7 +5,12 @@ import {
   useFonts,
 } from "@expo-google-fonts/noto-sans-kr";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { Stack } from "expo-router";
+import {
+  Stack,
+  useRouter,
+  useSegments,
+  useRootNavigationState,
+} from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { StatusBar } from "expo-status-bar";
 import { useEffect, useState } from "react";
@@ -15,6 +20,8 @@ import { SafeAreaProvider } from "react-native-safe-area-context";
 
 import { colors } from "@/constants/theme";
 import { startMocking } from "@/mocks/start";
+import { getAccessToken } from "@/services/session";
+import { useAppStore } from "@/store/app-store";
 
 SplashScreen.preventAutoHideAsync().catch(() => undefined);
 
@@ -25,6 +32,21 @@ const queryClient = new QueryClient({
   },
 });
 
+function SessionGuard() {
+  const authenticated = useAppStore((state) => state.authenticated);
+  const router = useRouter();
+  const segments = useSegments();
+  const navigation = useRootNavigationState();
+  useEffect(() => {
+    if (!navigation?.key) return;
+    if (!authenticated) {
+      queryClient.clear();
+      if (segments.length) router.replace("/");
+    }
+  }, [authenticated, navigation?.key, router, segments]);
+  return null;
+}
+
 export default function RootLayout() {
   const [mocksReady, setMocksReady] = useState(false);
   const [fontsLoaded, fontError] = useFonts({
@@ -34,15 +56,24 @@ export default function RootLayout() {
   });
 
   useEffect(() => {
-    startMocking()
+    Promise.all([
+      startMocking(),
+      (async () => {
+        await useAppStore.persist.rehydrate();
+        const token = await getAccessToken();
+        useAppStore.getState().setAuthenticated(Boolean(token));
+      })(),
+    ])
       .catch((error: unknown) => {
-        console.error("[MSW] Failed to start request mocking.", error);
+        useAppStore.getState().setAuthenticated(false);
+        console.error("[Startup] Could not restore the session or start QA.", error);
       })
       .finally(() => setMocksReady(true));
   }, []);
 
   useEffect(() => {
-    if ((fontsLoaded || fontError) && mocksReady) SplashScreen.hideAsync().catch(() => undefined);
+    if ((fontsLoaded || fontError) && mocksReady)
+      SplashScreen.hideAsync().catch(() => undefined);
   }, [fontError, fontsLoaded, mocksReady]);
 
   if ((!fontsLoaded && !fontError) || !mocksReady) {
@@ -57,7 +88,14 @@ export default function RootLayout() {
     <GestureHandlerRootView style={styles.flex}>
       <SafeAreaProvider>
         <QueryClientProvider client={queryClient}>
-          <Stack screenOptions={{ headerShown: false, animation: "slide_from_right", contentStyle: { backgroundColor: colors.canvas } }} />
+          <SessionGuard />
+          <Stack
+            screenOptions={{
+              headerShown: false,
+              animation: "slide_from_right",
+              contentStyle: { backgroundColor: colors.canvas },
+            }}
+          />
           <StatusBar style="dark" />
         </QueryClientProvider>
       </SafeAreaProvider>
@@ -67,5 +105,10 @@ export default function RootLayout() {
 
 const styles = StyleSheet.create({
   flex: { flex: 1 },
-  loading: { flex: 1, alignItems: "center", justifyContent: "center", backgroundColor: colors.surface },
+  loading: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: colors.surface,
+  },
 });

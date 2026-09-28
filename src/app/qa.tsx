@@ -1,3 +1,5 @@
+import { USE_MSW } from "@/constants/api";
+import { UnavailableFeature } from "@/components/UnavailableFeature";
 import { useQueryClient } from "@tanstack/react-query";
 import { type Href, useRouter } from "expo-router";
 import { AlertTriangle, Check, CloudOff, Gauge, KeyRound, Map, RotateCcw, TimerReset } from "lucide-react-native";
@@ -27,7 +29,7 @@ const screenLinks: { title: string; subtitle: string; route: Href }[] = [
   { title: "개인정보와 권한", subtitle: "위치·기록 보관", route: "/settings/privacy" },
 ];
 
-export default function QaScreen() {
+function PreviewQaScreen() {
   const router = useRouter();
   const { width } = useWindowDimensions();
   const compact = width < 360;
@@ -73,10 +75,10 @@ export default function QaScreen() {
 
       <View style={styles.header}><AppText variant="heading">Kakao 준비 상태</AppText><AppText variant="caption" color={colors.inkMuted}>키 없이도 동일한 앱 흐름을 검증할 수 있어요.</AppText></View>
       <Card tone="outline" style={styles.integrationCard}>
-        <ListRow title="Kakao 로그인" subtitle={kakaoStatus.configured ? "앱 키 감지됨" : "MSW QA 우회 사용"} value={kakaoStatus.configured ? "설정됨" : "대기"} icon={KeyRound} />
+        <ListRow title="Kakao 로그인" subtitle={kakaoStatus.configured ? "앱 키 감지됨" : "현재 API에서 지원하지 않음"} value={kakaoStatus.configured ? "설정됨" : "대기"} icon={KeyRound} />
         <ListRow title="Kakao 지도" subtitle={kakaoStatus.mapConfigured ? "JavaScript 키 감지됨" : "Figma 지도+모의 좌표 사용"} value={kakaoStatus.mapConfigured ? "설정됨" : "대기"} icon={Map} />
       </Card>
-      {!kakaoStatus.configured ? <Card tone="lime" style={styles.note}><AlertTriangle size={19} color={colors.limeInk} /><AppText variant="caption" color={colors.limeInk} style={styles.noteCopy}>Kakao 앱 생성 뒤 환경 변수와 네이티브 SDK 어댑터만 연결하면 돼요. 지금은 모든 CTA와 데이터 흐름이 MSW로 끝까지 동작합니다.</AppText></Card> : null}
+      {!kakaoStatus.configured ? <Card tone="lime" style={styles.note}><AlertTriangle size={19} color={colors.limeInk} /><AppText variant="caption" color={colors.limeInk} style={styles.noteCopy}>카카오 로그인 API는 제공되지 않아 이메일 로그인을 사용해요. 명세에 포함된 인증·미션·보상·설정·랭킹 흐름을 목업으로 확인할 수 있어요.</AppText></Card> : null}
 
       <View style={styles.header}><AppText variant="heading">운영 화면 바로가기</AppText></View>
       <Card tone="outline" style={styles.integrationCard}>{screenLinks.map((item) => <ListRow key={item.title} title={item.title} subtitle={item.subtitle} onPress={() => router.push(item.route)} />)}</Card>
@@ -102,3 +104,5 @@ const styles = StyleSheet.create({
   noteCopy: { flex: 1 },
   resetButton: { marginTop: spacing.xxl },
 });
+
+export default function Screen() { return USE_MSW ? <PreviewQaScreen /> : <UnavailableFeature title="QA" />; }

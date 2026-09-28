@@ -1,42 +1,27 @@
-import { API_BASE_URL } from "@/constants/api";
+import { API_BASE_URL, USE_MSW } from "@/constants/api";
+import { createApiClient } from "@/services/http-client";
+import { clearAccessToken, getAccessToken } from "@/services/session";
 import { useAppStore } from "@/store/app-store";
+export { ApiError } from "./http-client";
 
-export class ApiError extends Error {
-  constructor(
-    message: string,
-    public status: number,
-  ) {
-    super(message);
-  }
-}
-
-export async function apiRequest<T>(path: string, init?: RequestInit): Promise<T> {
-  const scenario = useAppStore.getState().qaScenario;
-  const response = await fetch(`${API_BASE_URL}${path}`, {
-    ...init,
-    headers: {
-      "content-type": "application/json",
-      "x-ohakkom-scenario": scenario,
-      ...init?.headers,
-    },
-  });
-
-  if (response.status === 204) return null as T;
-  if (!response.ok) {
-    const body = (await response.json().catch(() => null)) as { message?: string } | null;
-    throw new ApiError(body?.message ?? "요청을 처리하지 못했어요.", response.status);
-  }
-  return (await response.json()) as T;
-}
-
+export const apiRequest = createApiClient({
+  baseUrl: API_BASE_URL,
+  getToken: getAccessToken,
+  onUnauthorized: async () => {
+    await clearAccessToken();
+    useAppStore.getState().reset();
+  },
+  scenario: USE_MSW ? () => useAppStore.getState().qaScenario : undefined,
+});
 export function apiGet<T>(path: string) {
   return apiRequest<T>(path);
 }
-
 export function apiPost<T>(path: string, body?: unknown) {
-  return apiRequest<T>(path, { method: "POST", body: body ? JSON.stringify(body) : undefined });
+  return apiRequest<T>(path, {
+    method: "POST",
+    body: body === undefined ? undefined : JSON.stringify(body),
+  });
 }
-
 export function apiPatch<T>(path: string, body: unknown) {
   return apiRequest<T>(path, { method: "PATCH", body: JSON.stringify(body) });
 }

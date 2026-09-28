@@ -7,10 +7,10 @@ export type UserProfile = {
   district: string;
   streak: number;
   totalOutings: number;
-  weeklyGoal: number;
-  weeklyDone: number;
+  weeklyGoal?: number;
+  weeklyDone?: number;
   points: number;
-  rankingOptIn: boolean;
+  rankingOptIn?: boolean;
 };
 
 export type Mission = {
@@ -20,8 +20,10 @@ export type Mission = {
   reason: string;
   destination: string;
   address: string;
-  distanceM: number;
-  durationMin: number;
+  status?: "READY" | "IN_PROGRESS" | "ARRIVED";
+  startedAt?: string;
+  distanceM?: number;
+  durationMin?: number;
   reward: number;
   tags: string[];
   sponsored?: boolean;

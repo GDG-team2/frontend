@@ -62,7 +62,9 @@
     "typecheck": "tsc --noEmit",
     "doctor": "bunx expo-doctor@latest",
     "build:android": "bunx eas-cli@latest build --platform android",
-    "build:ios": "bunx eas-cli@latest build --platform ios"
+    "build:ios": "bunx eas-cli@latest build --platform ios",
+    "test": "bun test",
+    "api:types": "bun scripts/generate-api-types.mjs"
   },
   "private": true,
   "msw": {

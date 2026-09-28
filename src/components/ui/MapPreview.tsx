@@ -1,3 +1,4 @@
+import { USE_MSW } from "@/constants/api";
 import { Image } from "expo-image";
 import { Crosshair, MapPin } from "lucide-react-native";
 import { Pressable, StyleSheet, View } from "react-native";
@@ -15,6 +16,7 @@ const sources = {
 };
 
 export function MapPreview({ variant = "mission", height = 260, interactive = true }: { variant?: MapVariant; height?: number; interactive?: boolean }) {
+  if (!USE_MSW) return <View style={[styles.container, { height: 80, padding: spacing.md }]}><AppText>목적지 지도는 장소 정보에서 열 수 있어요.</AppText></View>;
   return (
     <View style={[styles.container, { height }]}>
       <Image source={sources[variant]} contentFit="fill" style={StyleSheet.absoluteFill} accessibilityLabel="망원동 주변 지도 미리보기" />

@@ -1,3 +1,5 @@
+import { USE_MSW } from "@/constants/api";
+import { UnavailableFeature } from "@/components/UnavailableFeature";
 import { useRouter } from "expo-router";
 import { BadgePercent, BookOpen, MapPin, ShieldCheck } from "lucide-react-native";
 import { StyleSheet, View } from "react-native";
@@ -6,7 +8,7 @@ import { AppText, Button, Card, Chip, MapPreview, Metric, Page, TopBar } from "@
 import { colors, spacing } from "@/constants/theme";
 import { mockSponsoredMission } from "@/mocks/data";
 
-export default function SponsoredMissionScreen() {
+function PreviewSponsoredMissionScreen() {
   const router = useRouter();
   const mission = mockSponsoredMission;
   return (
@@ -37,3 +39,5 @@ const styles = StyleSheet.create({
   safety: { flexDirection: "row", gap: spacing.xs, marginTop: spacing.sm, padding: spacing.md },
   safetyCopy: { flex: 1 },
 });
+
+export default function Screen() { return USE_MSW ? <PreviewSponsoredMissionScreen /> : <UnavailableFeature title="제휴 미션" />; }
