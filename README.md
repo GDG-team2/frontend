@@ -58,3 +58,7 @@ bun run build:android
 ```
 
 Android 네이티브 빌드는 Gradle, iOS는 Xcode/EAS Build를 사용합니다.
+
+## GitHub Release 자동 배포
+
+`v1.2.3` 태그를 push하면 CI 검증 → EAS의 APK·Ad Hoc IPA 빌드 → GitHub Release 첨부 순서로 실행합니다. `v1.2.3-rc.1`은 Pre-release로 게시됩니다. Expo 프로젝트/서명 초기 설정과 `EXPO_TOKEN` Secret이 필요합니다. [초기 설정과 배포 방법](docs/releases.md)을 먼저 확인하세요.

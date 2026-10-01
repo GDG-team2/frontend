@@ -1,3 +1,4 @@
+import Constants from "expo-constants";
 import { useQueryClient } from "@tanstack/react-query";
 import { USE_MSW } from "@/constants/api";
 import { useRouter } from "expo-router";
@@ -105,7 +106,7 @@ export default function SettingsScreen() {
         <View>
           <AppText variant="label">오하꼼</AppText>
           <AppText variant="caption" color={colors.inkMuted}>
-            버전 1.0.0
+            버전 {Constants.expoConfig?.version ?? "—"}
           </AppText>
         </View>
         <View style={styles.buildBadge}>
