@@ -5,11 +5,14 @@ export type UserProfile = {
   id: string;
   nickname: string;
   district: string;
-  streak: number;
+  rhythmWeeks: number;
   totalOutings: number;
   weeklyGoal?: number;
   weeklyDone?: number;
   points: number;
+  regionCode?: string;
+  birthYear?: number;
+  rankingNickname?: string;
   rankingOptIn?: boolean;
 };
 
@@ -22,6 +25,11 @@ export type Mission = {
   address: string;
   status?: "READY" | "IN_PROGRESS" | "ARRIVED";
   startedAt?: string;
+  scheduledAt?: string;
+  placeUrl?: string;
+  routeDistanceM?: number;
+  oneWayMin?: number;
+  estCost?: number;
   distanceM?: number;
   durationMin?: number;
   reward: number;

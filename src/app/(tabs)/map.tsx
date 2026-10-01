@@ -1,66 +1,111 @@
-import { USE_MSW } from "@/constants/api";
-import { UnavailableFeature } from "@/components/UnavailableFeature";
+import { useState } from "react";
+import { View } from "react-native";
 import { useRouter } from "expo-router";
-import { Bookmark, ChevronRight, MapPinned, Navigation } from "lucide-react-native";
-import { StyleSheet, View } from "react-native";
-
-import { AppText, Card, MapPreview, Metric, Page } from "@/components/ui";
+import { MapPinned } from "lucide-react-native";
+import { AppText, Card, Page, StateView } from "@/components/ui";
+import { ChoiceGroup } from "@/components/ChoiceGroup";
+import { MapLink } from "@/components/MapLink";
 import { colors, spacing } from "@/constants/theme";
-
-const places = [
-  { title: "망원동 작은 정원", meta: "2번 방문 · 마지막 8월 23일" },
-  { title: "연남동 산책길", meta: "1번 방문 · 마지막 8월 20일" },
-];
-
-function PreviewPersonalMapScreen() {
+import { useMissionMap } from "@/services/queries";
+import { formatKoreaTime } from "@/services/time";
+export default function PersonalMapScreen() {
+  const [period, setPeriod] = useState<"WEEK" | "MONTH" | "ALL">("MONTH");
+  const query = useMissionMap({ period });
   const router = useRouter();
   return (
     <Page testID="map-screen">
-      <View style={styles.header}>
-        <View>
-          <AppText variant="caption" color={colors.inkMuted}>내가 걸어 만든</AppText>
+      <View style={{ gap: spacing.lg }}>
+        <View
+          style={{
+            flexDirection: "row",
+            alignItems: "center",
+            gap: spacing.sm,
+          }}
+        >
+          <MapPinned size={24} color={colors.purpleStrong} />
           <AppText variant="title">내 지도</AppText>
         </View>
-        <View style={styles.icon}><MapPinned size={22} color={colors.purpleStrong} /></View>
-      </View>
-      <MapPreview variant="place" height={300} />
-      <Card tone="subtle" style={styles.metrics}>
-        <Metric value="28" label="총 외출" />
-        <View style={styles.metricDivider} />
-        <Metric value="14.2km" label="걸은 거리" accent={colors.purpleStrong} />
-        <View style={styles.metricDivider} />
-        <Metric value="12" label="저장 장소" />
-      </Card>
-      <View style={styles.sectionTitle}>
-        <AppText variant="heading">최근 다녀온 곳</AppText>
-        <AppText variant="caption" color={colors.inkMuted}>장소를 누르면 기록을 볼 수 있어요</AppText>
-      </View>
-      <View style={styles.list}>
-        {places.map((place, index) => (
-          <Card key={place.title} tone="outline" onPress={() => router.push(index === 0 ? "/place" : "/history/record-02")} accessibilityLabel={`${place.title} 보기`} style={styles.placeCard}>
-            <View style={styles.placeIcon}>{index === 0 ? <Bookmark size={19} color={colors.limeInk} /> : <Navigation size={19} color={colors.purpleInk} />}</View>
-            <View style={styles.placeCopy}>
-              <AppText variant="label">{place.title}</AppText>
-              <AppText variant="caption" color={colors.inkMuted}>{place.meta}</AppText>
-            </View>
-            <ChevronRight size={20} color={colors.inkFaint} />
-          </Card>
-        ))}
+        <ChoiceGroup
+          title="다녀온 기간"
+          options={{ WEEK: "이번 주", MONTH: "이번 달", ALL: "전체" }}
+          value={period}
+          onChange={setPeriod}
+        />
+        {query.isLoading ? (
+          <StateView type="loading" />
+        ) : query.isError ? (
+          <StateView
+            type="error"
+            description={query.error.message}
+            onRetry={() => query.refetch()}
+          />
+        ) : (
+          <>
+            <Card tone="lime" style={{ gap: spacing.xs }}>
+              <AppText variant="heading">
+                {query.data?.stats?.outingCount ?? 0}번 나가고,{" "}
+                {query.data?.stats?.newPlaceCount ?? 0}곳 발견했어요
+              </AppText>
+              <AppText>
+                예상 왕복 이동{" "}
+                {(
+                  (query.data?.stats?.totalRouteDistanceMeters ?? 0) / 1000
+                ).toFixed(1)}
+                km
+              </AppText>
+            </Card>
+            <AppText variant="heading">다녀온 장소</AppText>
+            <AppText color={colors.inkMuted}>
+              장소의 정확한 위치와 길찾기는 카카오맵에서 볼 수 있어요.
+            </AppText>
+            {!query.data?.places?.length ? (
+              <StateView
+                type="empty"
+                title="아직 다녀온 장소가 없어요"
+                description="미션을 마치면 나만의 장소가 쌓여요."
+              />
+            ) : (
+              query.data.places.map((place) => (
+                <Card
+                  key={place.placeId}
+                  tone="outline"
+                  style={{ gap: spacing.sm }}
+                >
+                  <AppText variant="heading">{place.name}</AppText>
+                  <AppText variant="caption" color={colors.inkMuted}>
+                    {place.visitCount}번 방문 ·{" "}
+                    {formatKoreaTime(place.lastVisitedAt)}
+                  </AppText>
+                  <MapLink
+                    name={place.name ?? "방문 장소"}
+                    latitude={place.latitude}
+                    longitude={place.longitude}
+                  />
+                </Card>
+              ))
+            )}
+            {query.data?.recent?.length ? (
+              <>
+                <AppText variant="heading">최근 기록</AppText>
+                {query.data.recent.map((record) => (
+                  <Card
+                    key={record.missionId}
+                    tone="purple"
+                    onPress={() => router.push(`/history/${record.missionId}`)}
+                    accessibilityLabel={`${record.missionTitle} 기록 보기`}
+                  >
+                    <AppText variant="label">{record.missionTitle}</AppText>
+                    <AppText variant="caption">
+                      {formatKoreaTime(record.completedAt)} ·{" "}
+                      {record.durationMinutes}분
+                    </AppText>
+                  </Card>
+                ))}
+              </>
+            ) : null}
+          </>
+        )}
       </View>
     </Page>
   );
 }
-
-const styles = StyleSheet.create({
-  header: { minHeight: 72, flexDirection: "row", alignItems: "center", justifyContent: "space-between" },
-  icon: { width: 44, height: 44, borderRadius: 22, backgroundColor: colors.purpleSoft, alignItems: "center", justifyContent: "center" },
-  metrics: { flexDirection: "row", alignItems: "center", marginTop: spacing.sm, paddingHorizontal: spacing.sm, paddingVertical: spacing.md },
-  metricDivider: { width: StyleSheet.hairlineWidth, height: 34, backgroundColor: colors.borderStrong },
-  sectionTitle: { gap: 2, marginTop: spacing.xxl, marginBottom: spacing.md },
-  list: { gap: spacing.sm },
-  placeCard: { flexDirection: "row", alignItems: "center", gap: spacing.sm, padding: spacing.md },
-  placeIcon: { width: 40, height: 40, borderRadius: 20, backgroundColor: colors.limeSoft, alignItems: "center", justifyContent: "center" },
-  placeCopy: { flex: 1, gap: 2 },
-});
-
-export default function Screen() { return USE_MSW ? <PreviewPersonalMapScreen /> : <UnavailableFeature title="내 지도" />; }

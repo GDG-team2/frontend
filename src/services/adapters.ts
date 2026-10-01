@@ -1,5 +1,5 @@
 import type {
-  ActiveMissionInfo,
+  CurrentMissionResponseActiveMissionInfo,
   MissionRecommendResponse,
   UserProfileResponse,
 } from "@/types/api";
@@ -12,14 +12,19 @@ export function toProfile(data: UserProfileResponse): UserProfile {
     id: data.userUuid,
     nickname: data.nickname,
     district: data.region?.regionName ?? "동네 미등록",
-    streak: data.streak?.streakNow ?? 0,
+    rhythmWeeks: data.rhythm?.currentWeeks ?? 0,
+    weeklyGoal: data.rhythm?.weeklyGoal ?? 3,
+    weeklyDone: data.rhythm?.thisWeekCount ?? 0,
+    regionCode: data.region?.regionCode,
+    birthYear: data.birthYear,
+    rankingNickname: data.rankingNickname,
     totalOutings: data.stats?.totalCompletedMissions ?? 0,
     points: data.asset?.currentPoint ?? 0,
   };
 }
 
 export function toMission(
-  data: ActiveMissionInfo | MissionRecommendResponse,
+  data: CurrentMissionResponseActiveMissionInfo | MissionRecommendResponse,
 ): Mission {
   if (
     !Number.isSafeInteger(data.missionId) ||
@@ -33,14 +38,23 @@ export function toMission(
     id: String(data.missionId),
     status: data.status as Mission["status"],
     startedAt: "startedAt" in data ? data.startedAt : undefined,
-    title: `${data.place.name} 산책`,
+    title: data.missionTitle ?? `${data.place.name} 산책`,
     summary: "가까운 목적지까지 가볍게 걸어보세요.",
-    reason: "현재 위치를 기준으로 추천한 장소예요.",
+    reason:
+      "reason" in data
+        ? (data.reason ?? "")
+        : "현재 위치를 기준으로 추천한 장소예요.",
+    scheduledAt:
+      "scheduledAt" in data ? (data.scheduledAt ?? undefined) : undefined,
+    placeUrl: data.place.placeUrl,
+    routeDistanceM:
+      "routeDistanceMeters" in data ? data.routeDistanceMeters : undefined,
+    oneWayMin: "oneWayMinutes" in data ? data.oneWayMinutes : undefined,
+    estCost: "estCost" in data ? data.estCost : undefined,
     destination: data.place.name,
     address: data.place.roadAddress ?? "주소 정보 없음",
     distanceM: "distanceMeters" in data ? data.distanceMeters : undefined,
-    durationMin:
-      "estDurationMinutes" in data ? data.estDurationMinutes : undefined,
+    durationMin: "totalMinutes" in data ? data.totalMinutes : undefined,
     reward: data.estRewardPoint ?? 0,
     tags: data.place.category ? [data.place.category] : [],
     latitude: data.place.latitude,

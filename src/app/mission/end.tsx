@@ -1,5 +1,9 @@
+import { useState } from "react";
+import { ChoiceGroup } from "@/components/ChoiceGroup";
+import { abortReasons } from "@/constants/options";
+import type { MissionAbortRequest } from "@/types/api";
 import { backend } from "@/services/backend";
-import { useMissionAction } from "@/services/queries";
+import { useMissionAction, useRecommendation } from "@/services/queries";
 import { useRouter } from "expo-router";
 import { Home, RotateCcw, ShieldCheck } from "lucide-react-native";
 import { StyleSheet, View } from "react-native";
@@ -9,8 +13,22 @@ import { colors, spacing } from "@/constants/theme";
 
 export default function EndMissionScreen() {
   const router = useRouter();
+  const [reason, setReason] = useState<MissionAbortRequest["reason"]>();
+  const current = useRecommendation();
   const abort = useMissionAction(async (mission) => {
-    await backend.abort(Number(mission.id));
+    try {
+      return await backend.abort(Number(mission.id), { reason });
+    } catch (error) {
+      const detail = await backend
+        .mission(Number(mission.id))
+        .catch(() => null);
+      if (detail?.status === "ABORTED")
+        return {
+          status: "ABORTED",
+          nextRecommendationNote: "미션 중단이 반영됐어요.",
+        };
+      throw error;
+    }
   });
   return (
     <Page>
@@ -35,26 +53,51 @@ export default function EndMissionScreen() {
           집 밖으로 나왔고 · 새로운 골목을 걸었고 · 스스로 멈출 시점을 골랐어요.
         </AppText>
       </Card>
+      {!abort.isSuccess ? (
+        <View style={{ marginTop: spacing.lg }}>
+          <ChoiceGroup
+            title="멈추는 이유 (선택)"
+            options={abortReasons}
+            value={reason}
+            disabled={abort.isPending}
+            onChange={setReason}
+          />
+        </View>
+      ) : (
+        <Card tone="purple" style={styles.card}>
+          <AppText>
+            {abort.data?.nextRecommendationNote ??
+              "미션을 중단했어요. 준비됐을 때 다시 만나요."}
+          </AppText>
+        </Card>
+      )}
       {abort.error ? (
         <AppText color={colors.danger}>{abort.error.message}</AppText>
       ) : null}
       <View style={styles.actions}>
         <Button
-          label="잠깐 쉬고 계속"
+          label={
+            abort.isSuccess || !current.data
+              ? "홈으로 돌아가기"
+              : "잠깐 쉬고 계속"
+          }
+          disabled={abort.isPending}
           icon={RotateCcw}
-          onPress={() => router.back()}
-        />
-        <Button
-          label="미션 중단하고 홈으로"
-          loading={abort.isPending}
-          icon={Home}
-          variant="secondary"
           onPress={() =>
-            abort.mutate(undefined, {
-              onSuccess: () => router.replace("/(tabs)"),
-            })
+            abort.isSuccess || !current.data
+              ? router.replace("/(tabs)")
+              : router.back()
           }
         />
+        {!abort.isSuccess && current.data ? (
+          <Button
+            label="미션 중단하기"
+            loading={abort.isPending}
+            icon={Home}
+            variant="secondary"
+            onPress={() => abort.mutate()}
+          />
+        ) : null}
       </View>
     </Page>
   );

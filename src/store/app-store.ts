@@ -59,10 +59,11 @@ export const useAppStore = create<AppState>()(
       reset: () => set(initialState),
     }),
     {
-      name: "ohakkom-app-state",
+      name: "ohakkom-app-state-v2",
+      skipHydration: true,
+      version: 2,
       storage: createJSONStorage(() => AsyncStorage),
       partialize: (state) => ({
-        settings: state.settings,
         onboardingComplete: state.onboardingComplete,
         locationGranted: state.locationGranted,
         qaScenario: state.qaScenario,

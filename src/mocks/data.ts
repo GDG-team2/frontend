@@ -11,7 +11,7 @@ export const mockUser: UserProfile = {
   id: "user-01",
   nickname: "선우",
   district: "서울 마포구",
-  streak: 4,
+  rhythmWeeks: 4,
   totalOutings: 28,
   weeklyGoal: 4,
   weeklyDone: 3,
@@ -22,8 +22,10 @@ export const mockUser: UserProfile = {
 export const mockMission: Mission = {
   id: "mission-01",
   title: "망원 골목에서 초록색 찾기",
-  summary: "집에서 12분 거리의 조용한 골목을 걸으며 초록색 물건을 세 개 찾아보세요.",
-  reason: "오늘은 에너지가 낮아서, 결정할 것 없이 가볍게 걷고 돌아올 수 있는 미션으로 골랐어요.",
+  summary:
+    "집에서 12분 거리의 조용한 골목을 걸으며 초록색 물건을 세 개 찾아보세요.",
+  reason:
+    "오늘은 에너지가 낮아서, 결정할 것 없이 가볍게 걷고 돌아올 수 있는 미션으로 골랐어요.",
   destination: "망원동 작은 정원",
   address: "서울 마포구 포은로 6길",
   distanceM: 780,
@@ -108,8 +110,20 @@ export const mockNotifications: NotificationItem[] = [
 ];
 
 export const mockBenefits: Benefit[] = [
-  { id: "benefit-01", brand: "동네책방", title: "따뜻한 차 1잔", expiresAt: "2026-09-30", points: 800 },
-  { id: "benefit-02", brand: "마을상점", title: "산책 키트 10% 할인", expiresAt: "2026-10-15", points: 500 },
+  {
+    id: "benefit-01",
+    brand: "동네책방",
+    title: "따뜻한 차 1잔",
+    expiresAt: "2026-09-30",
+    points: 800,
+  },
+  {
+    id: "benefit-02",
+    brand: "마을상점",
+    title: "산책 키트 10% 할인",
+    expiresAt: "2026-10-15",
+    points: 500,
+  },
 ];
 
 export const mockRanking: RankingEntry[] = [

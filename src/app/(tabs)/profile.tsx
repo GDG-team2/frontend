@@ -71,7 +71,7 @@ export default function MyPageScreen() {
         <View style={styles.profileCopy}>
           <AppText variant="title">{user.nickname}</AppText>
           <AppText color={colors.inkMuted}>
-            {user.district} · {user.streak}일 연속 외출
+            {user.district} · {user.rhythmWeeks}주 연속 목표 달성
           </AppText>
         </View>
         <Card
@@ -86,7 +86,7 @@ export default function MyPageScreen() {
       <Card tone="lime" style={styles.metrics}>
         <Metric value={`${user.totalOutings}`} label="총 외출" />
         <View style={styles.metricDivider} />
-        <Metric value={`${user.streak}일`} label="연속 기록" />
+        <Metric value={`${user.rhythmWeeks}주`} label="주간 리듬" />
         <View style={styles.metricDivider} />
         <Metric value={`${user.points.toLocaleString()}P`} label="포인트" />
       </Card>

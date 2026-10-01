@@ -77,7 +77,7 @@ export default function RankingScreen() {
         <Card tone="subtle" style={styles.privateCard}>
           <LockKeyhole size={21} color={colors.inkMuted} />
           <View style={styles.privateCopy}>
-            <AppText variant="label">닉네임·동네 범위를 직접 선택해요</AppText>
+            <AppText variant="label">랭킹 공개 여부를 직접 선택해요</AppText>
             <AppText variant="caption" color={colors.inkMuted}>
               정확한 위치, 경로, 미션 내용은 랭킹에 사용하지 않아요.
             </AppText>
@@ -87,7 +87,7 @@ export default function RankingScreen() {
       <View style={styles.header}>
         <AppText variant="heading">이번 주 동네 순위</AppText>
         <AppText variant="caption" color={colors.inkMuted}>
-          주간 점수를 비교해요
+          주 3회까지 100점 · 새로운 범주 +20점
         </AppText>
       </View>
       {!query.data?.leaderboard?.length ? (
@@ -96,7 +96,7 @@ export default function RankingScreen() {
         <View style={styles.list}>
           {query.data.leaderboard.map((entry) => (
             <Card
-              key={`${entry.rank}-${entry.nickname}`}
+              key={entry.userUuid}
               tone={
                 entry.userUuid === query.data?.myRanking?.userUuid
                   ? "lime"
@@ -118,11 +118,17 @@ export default function RankingScreen() {
                   <AppText variant="label">{entry.rank}</AppText>
                 )}
               </View>
-              <AppText variant="label" style={styles.nickname}>
-                {entry.userUuid === query.data?.myRanking?.userUuid && !optIn
-                  ? "나 (비공개)"
-                  : entry.nickname}
-              </AppText>
+              <View style={styles.nickname}>
+                <AppText variant="label">
+                  {entry.userUuid === query.data?.myRanking?.userUuid && !optIn
+                    ? "나 (비공개)"
+                    : entry.nickname}
+                </AppText>
+                <AppText variant="caption" color={colors.inkMuted}>
+                  검증 미션 {entry.scoredMissionCount ?? 0}회 · 보너스{" "}
+                  {entry.bonusScore ?? 0}점
+                </AppText>
+              </View>
               <AppText variant="label" color={colors.inkMuted}>
                 {entry.score ?? 0}점
               </AppText>

@@ -24,7 +24,7 @@ export default function CommitScreen() {
         <View style={styles.timerInner}>
           <AppText variant="display">{mission?.durationMin ?? "—"}</AppText>
           <AppText variant="label" color={colors.inkMuted}>
-            예상 소요 시간
+            전체 예상 시간 (분)
           </AppText>
         </View>
       </View>
@@ -45,6 +45,13 @@ export default function CommitScreen() {
           <AppText color={colors.limeInk}>목적지까지 가볍게 걸어보기</AppText>
         </View>
       </Card>
+      <Button
+        label="나중에 출발하기 · 시간 약속"
+        variant="secondary"
+        disabled={!mission}
+        onPress={() => router.push("/mission/schedule")}
+        style={{ marginTop: spacing.md }}
+      />
       <View style={styles.checklist}>
         {[
           {

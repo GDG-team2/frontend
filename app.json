@@ -45,7 +45,10 @@
           "imageWidth": 76
         }
       ],
-      "expo-secure-store"
+      "expo-secure-store",
+      "expo-font",
+      "expo-image",
+      "expo-web-browser"
     ],
     "experiments": {
       "typedRoutes": true,
@@ -53,7 +56,7 @@
     },
     "extra": {
       "mocking": {
-        "enabledByDefault": true
+        "enabledByDefault": false
       },
       "kakao": {
         "status": "awaiting-app-keys"

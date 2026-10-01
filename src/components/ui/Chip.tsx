@@ -8,15 +8,23 @@ type ChipProps = {
   selected?: boolean;
   onPress?: () => void;
   compact?: boolean;
+  disabled?: boolean;
 };
 
-export function Chip({ label, selected, onPress, compact }: ChipProps) {
+export function Chip({
+  label,
+  selected,
+  onPress,
+  compact,
+  disabled,
+}: ChipProps) {
   return (
     <Pressable
       accessibilityRole={onPress ? "button" : "text"}
-      accessibilityState={{ selected }}
+      accessibilityState={{ selected, disabled }}
+      aria-pressed={onPress ? selected : undefined}
       accessibilityLabel={label}
-      disabled={!onPress}
+      disabled={disabled || !onPress}
       onPress={onPress}
       style={({ pressed }) => [
         styles.base,
@@ -25,7 +33,10 @@ export function Chip({ label, selected, onPress, compact }: ChipProps) {
         pressed && styles.pressed,
       ]}
     >
-      <AppText variant={compact ? "caption" : "label"} color={selected ? colors.white : colors.inkMuted}>
+      <AppText
+        variant={compact ? "caption" : "label"}
+        color={selected ? colors.white : colors.inkMuted}
+      >
         {label}
       </AppText>
     </Pressable>

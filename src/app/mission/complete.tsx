@@ -43,6 +43,16 @@ export default function CompleteMissionScreen() {
         <StateView type="error" onRetry={() => current.refetch()} />
       </Page>
     );
+  if (!result && !current.data && complete.isPending)
+    return (
+      <Page>
+        <TopBar title="도착 · 기록" />
+        <StateView
+          type="loading"
+          description="기록과 보상을 저장하고 있어요."
+        />
+      </Page>
+    );
   if (!result && !current.data)
     return (
       <Page>
@@ -113,14 +123,24 @@ export default function CompleteMissionScreen() {
               {(result.reward?.currentTotalPoint ?? 0).toLocaleString()} P
             </AppText>
           </Card>
+          {result.rhythm?.goalJustAchieved ? (
+            <AppText
+              variant="heading"
+              align="center"
+              style={{ marginTop: spacing.md }}
+            >
+              이번 주 목표를 달성했어요!
+            </AppText>
+          ) : null}
           <View style={styles.statRow}>
             <Card tone="subtle" style={styles.statCard}>
               <Flame size={21} color={colors.purpleStrong} />
               <AppText variant="heading">
-                {result.streak?.streakNow ?? 0}일 연속
+                {result.rhythm?.currentWeeks ?? 0}주 연속
               </AppText>
               <AppText variant="caption" color={colors.inkMuted}>
-                차곡차곡 이어온 산책
+                이번 주 {result.rhythm?.thisWeekCount ?? 0}/
+                {result.rhythm?.weeklyGoal ?? 3}회
               </AppText>
             </Card>
             {result.ranking?.isParticipant ? (
@@ -130,7 +150,9 @@ export default function CompleteMissionScreen() {
                   {result.ranking.currentWeeklyScore ?? 0}점
                 </AppText>
                 <AppText variant="caption" color={colors.purpleInk}>
-                  이번 주 랭킹 점수
+                  이번 획득 +{result.ranking.earnedScore ?? 0}점 · 주간{" "}
+                  {result.ranking.scoredMissionCount ?? 0}/
+                  {result.ranking.maxScoredMissions ?? 3}회
                 </AppText>
               </Card>
             ) : null}

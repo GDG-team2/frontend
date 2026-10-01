@@ -12,12 +12,14 @@ export default function BadgesScreen() {
   if (query.isLoading)
     return (
       <Page>
+        <TopBar title="배지와 업적" />
         <StateView type="loading" />
       </Page>
     );
   if (query.isError)
     return (
       <Page>
+        <TopBar title="배지와 업적" />
         <StateView type="error" onRetry={() => query.refetch()} />
       </Page>
     );
@@ -27,6 +29,7 @@ export default function BadgesScreen() {
     description: badge.description,
     icon: Award,
     earned: badge.isAcquired,
+    progress: `${badge.progressCurrent ?? 0} / ${badge.progressTarget ?? 0}`,
     tone: badge.isAcquired ? colors.lime : colors.surfaceSubtle,
   }));
 
@@ -49,31 +52,36 @@ export default function BadgesScreen() {
         <StateView type="empty" title="등록된 배지가 없어요" />
       ) : null}
       <View style={styles.grid}>
-        {badges.map(({ id, title, description, icon: Icon, earned, tone }) => (
-          <Card
-            key={id}
-            tone="outline"
-            style={[
-              styles.badgeCard,
-              narrow && styles.badgeCardNarrow,
-              !earned && styles.locked,
-            ]}
-          >
-            <View style={[styles.badgeIcon, { backgroundColor: tone }]}>
-              <Icon size={26} color={earned ? colors.ink : colors.inkFaint} />
-            </View>
-            <AppText
-              variant="label"
-              align="center"
-              color={earned ? colors.ink : colors.inkMuted}
+        {badges.map(
+          ({ id, title, description, icon: Icon, earned, tone, progress }) => (
+            <Card
+              key={id}
+              tone="outline"
+              style={[
+                styles.badgeCard,
+                narrow && styles.badgeCardNarrow,
+                !earned && styles.locked,
+              ]}
             >
-              {title}
-            </AppText>
-            <AppText variant="caption" align="center" color={colors.inkFaint}>
-              {description}
-            </AppText>
-          </Card>
-        ))}
+              <View style={[styles.badgeIcon, { backgroundColor: tone }]}>
+                <Icon size={26} color={earned ? colors.ink : colors.inkFaint} />
+              </View>
+              <AppText
+                variant="label"
+                align="center"
+                color={earned ? colors.ink : colors.inkMuted}
+              >
+                {title}
+              </AppText>
+              <AppText variant="caption" align="center" color={colors.inkFaint}>
+                {description}
+              </AppText>
+              <AppText variant="label" color={colors.purpleInk}>
+                {earned ? "획득 완료" : progress}
+              </AppText>
+            </Card>
+          ),
+        )}
       </View>
     </Page>
   );

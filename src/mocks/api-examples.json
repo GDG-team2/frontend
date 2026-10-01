@@ -1,59 +1,87 @@
 {
+  "MissionScheduleRequest": {
+    "departAt": "2026-10-01T17:00:00"
+  },
+  "ScheduledMissionInfo": {
+    "missionId": 1001,
+    "missionTitle": "화랑유원지 한 바퀴",
+    "scheduledAt": "2026-10-01T17:00:00",
+    "minutesUntilDeparture": 42,
+    "isOverdue": false,
+    "placeName": "화랑유원지",
+    "placeCategory": "WALK",
+    "moveType": "WALK",
+    "oneWayMinutes": 17,
+    "totalMinutes": 52,
+    "estCost": 0
+  },
   "MissionStartResponse": {
     "missionId": 1001,
     "status": "IN_PROGRESS",
-    "startedAt": "2026-09-28T09:00:00Z",
+    "startedAt": "2026-10-01T17:00:00",
     "message": "산책 미션을 시작했습니다. 안전하게 이동하세요!"
   },
   "MissionCompleteRequest": {
     "afterSurveyScore": 5,
     "stepCount": 1850
   },
-  "BadgeInfo": {
-    "badgeId": 2,
-    "badgeName": "공원 탐험가",
-    "description": "공원 카테고리의 장소를 3번 방문했습니다.",
-    "iconUrl": "https://example.com/badges/2.png"
-  },
   "MissionCompleteResponse": {
     "missionId": 1001,
     "status": "COMPLETED",
-    "completedAt": "2026-09-28T09:00:00Z",
+    "completedAt": "2026-10-01T17:00:00",
     "stepCount": 1850,
+    "isNewPlace": true,
+    "durationMinutes": 54,
     "reward": {
       "earnedPoint": 50,
       "currentTotalPoint": 1550
     },
     "ranking": {
       "isParticipant": true,
-      "earnedScore": 100,
-      "currentWeeklyScore": 500
+      "earnedScore": 120,
+      "bonusScore": 20,
+      "currentWeeklyScore": 230,
+      "scoredMissionCount": 2,
+      "maxScoredMissions": 3
     },
-    "streak": {
-      "streakNow": 6,
-      "isStreakMaintained": true
+    "rhythm": {
+      "weeklyGoal": 3,
+      "thisWeekCount": 3,
+      "goalJustAchieved": true,
+      "currentWeeks": 4
     },
     "newBadges": [
       {
         "badgeId": 2,
-        "badgeName": "공원 탐험가",
-        "description": "공원 카테고리의 장소를 3번 방문했습니다.",
+        "badgeName": "새 길 발견",
+        "description": "서로 다른 장소 5곳을 방문했어요.",
         "iconUrl": "https://example.com/badges/2.png"
       }
     ]
   },
-  "RankingInfo": {
-    "isParticipant": true,
-    "earnedScore": 100,
-    "currentWeeklyScore": 500
+  "MissionCompleteResponseBadgeInfo": {
+    "badgeId": 2,
+    "badgeName": "새 길 발견",
+    "description": "서로 다른 장소 5곳을 방문했어요.",
+    "iconUrl": "https://example.com/badges/2.png"
   },
-  "RewardInfo": {
+  "MissionCompleteResponseRankingInfo": {
+    "isParticipant": true,
+    "earnedScore": 120,
+    "bonusScore": 20,
+    "currentWeeklyScore": 230,
+    "scoredMissionCount": 2,
+    "maxScoredMissions": 3
+  },
+  "MissionCompleteResponseRewardInfo": {
     "earnedPoint": 50,
     "currentTotalPoint": 1550
   },
-  "StreakInfo": {
-    "streakNow": 6,
-    "isStreakMaintained": true
+  "MissionCompleteResponseRhythmInfo": {
+    "weeklyGoal": 3,
+    "thisWeekCount": 3,
+    "goalJustAchieved": true,
+    "currentWeeks": 4
   },
   "MissionArriveRequest": {
     "latitude": 37.49901,
@@ -62,55 +90,97 @@
   "MissionArriveResponse": {
     "missionId": 1001,
     "status": "ARRIVED",
-    "arrivedAt": "2026-09-28T09:00:00Z",
-    "message": "목적지에 도착했습니다! 주변을 둘러보세요."
+    "arrivedAt": "2026-10-01T17:00:00",
+    "remainingDwellSeconds": 0,
+    "message": "목적지에 도착했어요! 주변을 둘러보세요."
+  },
+  "MissionAbortRequest": {
+    "reason": "TIRED",
+    "movedDistanceMeters": 700
   },
   "MissionAbortResponse": {
     "missionId": 1001,
     "status": "ABORTED",
-    "abortedAt": "2026-09-28T09:00:00Z",
-    "message": "산책 미션을 포기했습니다."
+    "abortedAt": "2026-10-01T17:00:00",
+    "movedDistanceMeters": 700,
+    "nextRecommendationNote": "오늘은 더 가까운 곳부터 제안할게요.",
+    "message": "멈춰도 기록은 남아요."
   },
   "MissionRecommendRequest": {
     "latitude": 37.498095,
-    "longitude": 127.02761
+    "longitude": 127.02761,
+    "mood": "GLOOMY",
+    "category": "CAFE",
+    "moveType": "WALK",
+    "budget": "FREE",
+    "rejectReason": "TOO_FAR"
   },
   "MissionRecommendResponse": {
     "missionId": 1001,
     "status": "READY",
+    "missionTitle": "화랑유원지 한 바퀴",
+    "reason": "최근 카페 방문이 3회 연속이었어요. 공원 외출 뒤 만족도가 더 높았어요.",
     "place": {
       "placeId": 2001,
       "kakaoPlaceId": "18577297",
-      "name": "역삼동 근린공원",
-      "category": "공원",
-      "roadAddress": "서울특별시 강남구 역삼로 123",
-      "latitude": 37.499,
-      "longitude": 127.028
+      "name": "화랑유원지",
+      "category": "도시근린공원",
+      "roadAddress": "경기 안산시 단원구 동산로 268",
+      "latitude": 37.312,
+      "longitude": 126.822,
+      "placeUrl": "http://place.map.kakao.com/18577297"
     },
-    "distanceMeters": 450,
-    "estDurationMinutes": 10,
-    "estRewardPoint": 50
+    "distanceMeters": 780,
+    "routeDistanceMeters": 2028,
+    "oneWayMinutes": 17,
+    "totalMinutes": 49,
+    "estCost": 0,
+    "isNewPlace": true,
+    "estRewardPoint": 50,
+    "placeCategory": "WALK",
+    "moveType": "WALK",
+    "budget": "ANY"
   },
-  "PlaceInfo": {
+  "MissionRecommendResponsePlaceInfo": {
     "placeId": 2001,
     "kakaoPlaceId": "18577297",
-    "name": "역삼동 근린공원",
-    "category": "공원",
-    "roadAddress": "서울특별시 강남구 역삼로 123",
-    "latitude": 37.499,
-    "longitude": 127.028
+    "name": "화랑유원지",
+    "category": "도시근린공원",
+    "roadAddress": "경기 안산시 단원구 동산로 268",
+    "latitude": 37.312,
+    "longitude": 126.822,
+    "placeUrl": "http://place.map.kakao.com/18577297"
   },
   "SignupRequest": {
     "email": "user@example.com",
     "password": "password123!",
-    "nickname": "walking_master",
-    "birth": "1990-01-01",
-    "regionCode": "1168010100"
+    "nickname": "선우",
+    "birthYear": 2006,
+    "regionCode": "4127310500",
+    "agreements": {
+      "service": true,
+      "privacy": true,
+      "location": true,
+      "marketing": false
+    }
+  },
+  "SignupRequestAgreements": {
+    "service": true,
+    "privacy": true,
+    "location": true,
+    "marketing": false
   },
   "SignupResponse": {
     "userUuid": "123e4567-e89b-12d3-a456-426614174000",
     "nickname": "walking_master",
     "message": "회원가입이 완료되었습니다."
+  },
+  "ReissueRequest": {
+    "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+  },
+  "ReissueResponse": {
+    "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+    "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
   },
   "LoginRequest": {
     "email": "user@example.com",
@@ -122,30 +192,15 @@
     "userUuid": "123e4567-e89b-12d3-a456-426614174000",
     "nickname": "walking_master"
   },
-  "LocalTime": {
-    "hour": 0,
-    "minute": 0,
-    "second": 0,
-    "nano": 0
-  },
   "UserSettingsUpdateRequest": {
     "allAlarm": true,
     "startAlarm": true,
     "missionAlarm": true,
     "insightAlarm": true,
     "rewardAlarm": true,
-    "quietStart": {
-      "hour": 0,
-      "minute": 0,
-      "second": 0,
-      "nano": 0
-    },
-    "quietEnd": {
-      "hour": 0,
-      "minute": 0,
-      "second": 0,
-      "nano": 0
-    },
+    "quietEnabled": true,
+    "quietStart": "22:00:00",
+    "quietEnd": "22:00:00",
     "rankingSetting": true,
     "nameSetting": true,
     "placeSetting": true,
@@ -158,39 +213,28 @@
     "missionAlarm": false,
     "insightAlarm": false,
     "rewardAlarm": false,
-    "quietStart": {
-      "hour": 0,
-      "minute": 0,
-      "second": 0,
-      "nano": 0
-    },
-    "quietEnd": {
-      "hour": 0,
-      "minute": 0,
-      "second": 0,
-      "nano": 0
-    },
+    "quietEnabled": true,
+    "quietStart": "22:00:00",
+    "quietEnd": "22:00:00",
     "rankingSetting": false,
     "nameSetting": false,
     "placeSetting": false,
     "friendSetting": false,
-    "updatedAt": "2026-09-28T09:00:00Z",
+    "updatedAt": "2026-10-01T17:00:00",
     "message": "설정이 성공적으로 변경되었습니다."
   },
-  "AssetInfo": {
-    "currentPoint": 1500
-  },
-  "RegionInfo": {
-    "regionCode": "1168010100",
-    "regionName": "서울특별시 강남구 역삼동"
-  },
-  "StatsInfo": {
-    "totalCompletedMissions": 42
+  "UserProfileUpdateRequest": {
+    "nickname": "선우",
+    "regionCode": "4127310500",
+    "birthYear": 2007,
+    "rankingNickname": "선우"
   },
   "UserProfileResponse": {
     "userUuid": "123e4567-e89b-12d3-a456-426614174000",
     "email": "user@example.com",
-    "nickname": "walking_master",
+    "nickname": "선우",
+    "rankingNickname": "선우",
+    "birthYear": 2006,
     "profileImageUrl": "https://cdn.walkmission.com/profiles/u1.png",
     "region": {
       "regionCode": "1168010100",
@@ -199,33 +243,63 @@
     "asset": {
       "currentPoint": 1500
     },
-    "streak": {
-      "streakNow": 6,
-      "isStreakMaintained": true
+    "rhythm": {
+      "weeklyGoal": 3,
+      "thisWeekCount": 2,
+      "goalAchievedThisWeek": false,
+      "currentWeeks": 3,
+      "bestWeeks": 4
     },
     "representativeBadge": {
-      "badgeId": 2,
-      "badgeName": "공원 탐험가",
-      "description": "공원 카테고리의 장소를 3번 방문했습니다.",
-      "iconUrl": "https://example.com/badges/2.png"
+      "badgeId": 1,
+      "badgeName": "첫 산책 마스터",
+      "iconUrl": "https://example.com/badges/1.png"
     },
     "stats": {
       "totalCompletedMissions": 42
     }
   },
-  "PaginationInfo": {
-    "currentPage": 0,
-    "pageSize": 20,
-    "totalPages": 5,
-    "totalElements": 95,
-    "hasNext": true
+  "UserProfileResponseAssetInfo": {
+    "currentPoint": 1500
   },
-  "PointHistoryEntry": {
-    "historyId": 1,
-    "type": "EARN",
-    "amount": 50,
-    "description": "미션 완주 보상",
-    "createdAt": "2026-09-28T09:00:00Z"
+  "UserProfileResponseBadgeInfo": {
+    "badgeId": 1,
+    "badgeName": "첫 산책 마스터",
+    "iconUrl": "https://example.com/badges/1.png"
+  },
+  "UserProfileResponseRegionInfo": {
+    "regionCode": "1168010100",
+    "regionName": "서울특별시 강남구 역삼동"
+  },
+  "UserProfileResponseRhythmInfo": {
+    "weeklyGoal": 3,
+    "thisWeekCount": 2,
+    "goalAchievedThisWeek": false,
+    "currentWeeks": 3,
+    "bestWeeks": 4
+  },
+  "UserProfileResponseStatsInfo": {
+    "totalCompletedMissions": 42
+  },
+  "PreferenceUpdateRequest": {
+    "walkTime": 60,
+    "moveType": "WALK",
+    "categories": [
+      "WALK",
+      "CAFE"
+    ],
+    "weeklyGoal": 3,
+    "budget": "UNDER_10K"
+  },
+  "PreferenceResponse": {
+    "walkTime": 60,
+    "moveType": "WALK",
+    "categories": [
+      "WALK",
+      "CAFE"
+    ],
+    "weeklyGoal": 3,
+    "budget": "UNDER_10K"
   },
   "PointHistoryResponse": {
     "currentPoint": 1500,
@@ -235,7 +309,7 @@
         "type": "EARN",
         "amount": 50,
         "description": "미션 완주 보상",
-        "createdAt": "2026-09-28T09:00:00Z"
+        "createdAt": "2026-10-01T17:00:00"
       }
     ],
     "pagination": {
@@ -246,14 +320,19 @@
       "hasNext": true
     }
   },
-  "BadgeDetail": {
-    "badgeId": 1,
-    "badgeName": "첫 산책 마스터",
-    "description": "첫 산책을 무사히 완료했습니다.",
-    "iconUrl": "https://example.com/badges/1.png",
-    "isAcquired": true,
-    "isRepresentative": true,
-    "acquiredAt": "2026-09-28T09:00:00Z"
+  "PointHistoryResponsePaginationInfo": {
+    "currentPage": 0,
+    "pageSize": 20,
+    "totalPages": 5,
+    "totalElements": 95,
+    "hasNext": true
+  },
+  "PointHistoryResponsePointHistoryEntry": {
+    "historyId": 1,
+    "type": "EARN",
+    "amount": 50,
+    "description": "미션 완주 보상",
+    "createdAt": "2026-10-01T17:00:00"
   },
   "BadgeListResponse": {
     "summary": {
@@ -268,21 +347,26 @@
         "iconUrl": "https://example.com/badges/1.png",
         "isAcquired": true,
         "isRepresentative": true,
-        "acquiredAt": "2026-09-28T09:00:00Z"
+        "acquiredAt": "2026-10-01T17:00:00",
+        "progressCurrent": 3,
+        "progressTarget": 5
       }
     ]
   },
-  "BadgeSummary": {
+  "BadgeListResponseBadgeDetail": {
+    "badgeId": 1,
+    "badgeName": "첫 산책 마스터",
+    "description": "첫 산책을 무사히 완료했습니다.",
+    "iconUrl": "https://example.com/badges/1.png",
+    "isAcquired": true,
+    "isRepresentative": true,
+    "acquiredAt": "2026-10-01T17:00:00",
+    "progressCurrent": 3,
+    "progressTarget": 5
+  },
+  "BadgeListResponseBadgeSummary": {
     "totalCount": 20,
     "acquiredCount": 5
-  },
-  "RankingEntry": {
-    "isParticipating": true,
-    "userUuid": "123e4567-e89b-12d3-a456-426614174000",
-    "nickname": "walking_master",
-    "profileImageUrl": "https://example.com/profile.png",
-    "rank": 1,
-    "score": 1250
   },
   "RegionRankingResponse": {
     "region": {
@@ -299,7 +383,9 @@
       "nickname": "walking_master",
       "profileImageUrl": "https://example.com/profile.png",
       "rank": 1,
-      "score": 1250
+      "score": 1250,
+      "scoredMissionCount": 2,
+      "bonusScore": 20
     },
     "leaderboard": [
       {
@@ -308,35 +394,227 @@
         "nickname": "walking_master",
         "profileImageUrl": "https://example.com/profile.png",
         "rank": 1,
-        "score": 1250
+        "score": 1250,
+        "scoredMissionCount": 2,
+        "bonusScore": 20
       }
     ]
   },
-  "WeekPeriodInfo": {
+  "RegionRankingResponseRankingEntry": {
+    "isParticipating": true,
+    "userUuid": "123e4567-e89b-12d3-a456-426614174000",
+    "nickname": "walking_master",
+    "profileImageUrl": "https://example.com/profile.png",
+    "rank": 1,
+    "score": 1250,
+    "scoredMissionCount": 2,
+    "bonusScore": 20
+  },
+  "RegionRankingResponseRegionInfo": {
+    "regionCode": "1168010100",
+    "regionName": "서울특별시 강남구 역삼동"
+  },
+  "RegionRankingResponseWeekPeriodInfo": {
     "startDate": "2023-10-23",
     "endDate": "2023-10-29"
   },
-  "ActiveMissionInfo": {
+  "MissionDetailResponse": {
     "missionId": 1001,
-    "status": "IN_PROGRESS",
-    "startedAt": "2026-09-28T09:00:00Z",
+    "status": "COMPLETED",
+    "missionTitle": "화랑유원지 한 바퀴",
+    "reason": "",
     "place": {
       "placeId": 2001,
       "kakaoPlaceId": "18577297",
-      "name": "역삼동 근린공원",
-      "category": "공원",
-      "roadAddress": "서울특별시 강남구 역삼로 123",
-      "latitude": 37.499,
-      "longitude": 127.028
+      "name": "화랑유원지",
+      "category": "도시근린공원",
+      "roadAddress": "경기 안산시 단원구 동산로 268",
+      "latitude": 37.312,
+      "longitude": 126.822,
+      "placeUrl": "http://place.map.kakao.com/18577297"
     },
-    "estRewardPoint": 50
+    "placeCategory": "WALK",
+    "moveType": "WALK",
+    "isNewPlace": true,
+    "routeDistanceMeters": 2300,
+    "durationMinutes": 54,
+    "estCost": 0,
+    "stepCount": 3200,
+    "mood": {
+      "beforeMood": "GLOOMY",
+      "beforeScore": 2,
+      "afterScore": 4,
+      "change": 2
+    },
+    "timeline": [
+      {
+        "type": "STARTED",
+        "at": "2026-10-01T17:00:00",
+        "note": "약속보다 3분 빠르게 시작"
+      }
+    ],
+    "abort": {
+      "reason": "TIRED",
+      "movedDistanceMeters": 700
+    }
+  },
+  "MissionDetailResponseAbortInfo": {
+    "reason": "TIRED",
+    "movedDistanceMeters": 700
+  },
+  "MissionDetailResponseMoodChange": {
+    "beforeMood": "GLOOMY",
+    "beforeScore": 2,
+    "afterScore": 4,
+    "change": 2
+  },
+  "MissionDetailResponseTimelineEvent": {
+    "type": "STARTED",
+    "at": "2026-10-01T17:00:00",
+    "note": "약속보다 3분 빠르게 시작"
+  },
+  "ScheduledMissionsResponse": {
+    "missions": [
+      {
+        "missionId": 1001,
+        "missionTitle": "화랑유원지 한 바퀴",
+        "scheduledAt": "2026-10-01T17:00:00",
+        "minutesUntilDeparture": 42,
+        "isOverdue": false,
+        "placeName": "화랑유원지",
+        "placeCategory": "WALK",
+        "moveType": "WALK",
+        "oneWayMinutes": 17,
+        "totalMinutes": 52,
+        "estCost": 0
+      }
+    ]
+  },
+  "MissionMapResponse": {
+    "period": {
+      "type": "MONTH",
+      "startDate": "2026-08-01",
+      "endDate": "2026-08-31"
+    },
+    "stats": {
+      "outingCount": 13,
+      "newPlaceCount": 7,
+      "totalRouteDistanceMeters": 28400
+    },
+    "places": [
+      {
+        "placeId": 2001,
+        "name": "화랑유원지",
+        "category": "도시근린공원",
+        "latitude": 37.312,
+        "longitude": 126.822,
+        "visitCount": 2,
+        "lastVisitedAt": "2026-10-01T17:00:00"
+      }
+    ],
+    "recent": [
+      {
+        "missionId": 1001,
+        "missionTitle": "화랑유원지 한 바퀴",
+        "placeName": "화랑유원지",
+        "placeCategory": "WALK",
+        "completedAt": "2026-10-01T17:00:00",
+        "durationMinutes": 54,
+        "routeDistanceMeters": 2300,
+        "satisfaction": 4,
+        "isNewPlace": true,
+        "estCost": 0
+      }
+    ]
+  },
+  "MissionMapResponseStats": {
+    "outingCount": 13,
+    "newPlaceCount": 7,
+    "totalRouteDistanceMeters": 28400
+  },
+  "MissionMapResponseVisitedPlace": {
+    "placeId": 2001,
+    "name": "화랑유원지",
+    "category": "도시근린공원",
+    "latitude": 37.312,
+    "longitude": 126.822,
+    "visitCount": 2,
+    "lastVisitedAt": "2026-10-01T17:00:00"
+  },
+  "MissionRecordItem": {
+    "missionId": 1001,
+    "missionTitle": "화랑유원지 한 바퀴",
+    "placeName": "화랑유원지",
+    "placeCategory": "WALK",
+    "completedAt": "2026-10-01T17:00:00",
+    "durationMinutes": 54,
+    "routeDistanceMeters": 2300,
+    "satisfaction": 4,
+    "isNewPlace": true,
+    "estCost": 0
+  },
+  "PeriodInfo": {
+    "type": "MONTH",
+    "startDate": "2026-08-01",
+    "endDate": "2026-08-31"
+  },
+  "MissionHistoryResponse": {
+    "period": {
+      "type": "MONTH",
+      "startDate": "2026-08-01",
+      "endDate": "2026-08-31"
+    },
+    "summary": {
+      "completedCount": 13,
+      "totalOutdoorMinutes": 702,
+      "averageSatisfaction": 4.2,
+      "totalRouteDistanceMeters": 28400,
+      "newPlaceCount": 7
+    },
+    "records": [
+      {
+        "missionId": 1001,
+        "missionTitle": "화랑유원지 한 바퀴",
+        "placeName": "화랑유원지",
+        "placeCategory": "WALK",
+        "completedAt": "2026-10-01T17:00:00",
+        "durationMinutes": 54,
+        "routeDistanceMeters": 2300,
+        "satisfaction": 4,
+        "isNewPlace": true,
+        "estCost": 0
+      }
+    ],
+    "pagination": {
+      "currentPage": 0,
+      "pageSize": 20,
+      "totalPages": 1,
+      "totalElements": 13,
+      "hasNext": false
+    }
+  },
+  "MissionHistoryResponsePagination": {
+    "currentPage": 0,
+    "pageSize": 20,
+    "totalPages": 1,
+    "totalElements": 13,
+    "hasNext": false
+  },
+  "MissionHistoryResponseSummary": {
+    "completedCount": 13,
+    "totalOutdoorMinutes": 702,
+    "averageSatisfaction": 4.2,
+    "totalRouteDistanceMeters": 28400,
+    "newPlaceCount": 7
   },
   "CurrentMissionResponse": {
     "hasActiveMission": true,
     "mission": {
       "missionId": 1001,
       "status": "IN_PROGRESS",
-      "startedAt": "2026-09-28T09:00:00Z",
+      "missionTitle": "화랑유원지 한 바퀴",
+      "scheduledAt": "2026-10-01T17:00:00",
+      "startedAt": "2026-10-01T17:00:00",
       "place": {
         "placeId": 2001,
         "kakaoPlaceId": "18577297",
@@ -344,9 +622,46 @@
         "category": "공원",
         "roadAddress": "서울특별시 강남구 역삼로 123",
         "latitude": 37.499,
-        "longitude": 127.028
+        "longitude": 127.028,
+        "placeUrl": "http://place.map.kakao.com/18577297"
       },
       "estRewardPoint": 50
+    }
+  },
+  "CurrentMissionResponseActiveMissionInfo": {
+    "missionId": 1001,
+    "status": "IN_PROGRESS",
+    "missionTitle": "화랑유원지 한 바퀴",
+    "scheduledAt": "2026-10-01T17:00:00",
+    "startedAt": "2026-10-01T17:00:00",
+    "place": {
+      "placeId": 2001,
+      "kakaoPlaceId": "18577297",
+      "name": "역삼동 근린공원",
+      "category": "공원",
+      "roadAddress": "서울특별시 강남구 역삼로 123",
+      "latitude": 37.499,
+      "longitude": 127.028,
+      "placeUrl": "http://place.map.kakao.com/18577297"
+    },
+    "estRewardPoint": 50
+  },
+  "CurrentMissionResponsePlaceInfo": {
+    "placeId": 2001,
+    "kakaoPlaceId": "18577297",
+    "name": "역삼동 근린공원",
+    "category": "공원",
+    "roadAddress": "서울특별시 강남구 역삼로 123",
+    "latitude": 37.499,
+    "longitude": 127.028,
+    "placeUrl": "http://place.map.kakao.com/18577297"
+  },
+  "ErrorResponse": {
+    "status": 400,
+    "code": "NOT_ENOUGH_DISTANCE",
+    "message": "목적지 반경 50m 이내에 도착하지 않았습니다.",
+    "details": {
+      "currentDistanceMeters": 120
     }
   }
 }

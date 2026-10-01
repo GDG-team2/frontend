@@ -1,39 +1,129 @@
-import { USE_MSW } from "@/constants/api";
-import { UnavailableFeature } from "@/components/UnavailableFeature";
-import { useRouter } from "expo-router";
-import { Camera, MapPin, UserRound } from "lucide-react-native";
 import { useState } from "react";
-import { Pressable, StyleSheet, TextInput, View } from "react-native";
+import { View } from "react-native";
+import { UserRound } from "lucide-react-native";
+import { AppText, Button, Page, StateView, TopBar } from "@/components/ui";
+import { FormField } from "@/components/FormField";
+import { RequestError } from "@/components/RequestError";
+import { colors, spacing } from "@/constants/theme";
+import { useMe, useSaveProfile } from "@/services/queries";
+import { birthYearValue } from "@/services/validation";
+import type { UserProfileUpdateRequest } from "@/types/api";
 
-import { AppText, Button, Page, TopBar } from "@/components/ui";
-import { colors, font, radius, spacing } from "@/constants/theme";
-
-function PreviewEditProfileScreen() {
-  const router = useRouter();
-  const [nickname, setNickname] = useState("선우");
-  const [bio, setBio] = useState("결정은 작게, 산책은 가볍게.");
+export default function EditProfileScreen() {
+  const query = useMe();
+  const mutation = useSaveProfile();
+  const [draft, setDraft] = useState<Record<string, string>>({});
+  const [validation, setValidation] = useState("");
+  function save() {
+    try {
+      const patch: UserProfileUpdateRequest = {};
+      if (draft.nickname !== undefined) {
+        if (!draft.nickname.trim()) throw new Error("닉네임을 입력해 주세요.");
+        patch.nickname = draft.nickname.trim();
+      }
+      if (draft.regionCode !== undefined) {
+        if (!/^\d{10}$/.test(draft.regionCode))
+          throw new Error("동네 코드는 10자리 숫자로 입력해 주세요.");
+        patch.regionCode = draft.regionCode;
+      }
+      if (draft.rankingNickname !== undefined)
+        patch.rankingNickname = draft.rankingNickname.trim();
+      if (draft.birthYear !== undefined) {
+        const year = birthYearValue(draft.birthYear);
+        if (!year)
+          throw new Error(
+            "출생 연도를 입력해 주세요. 저장한 연도를 지우는 기능은 아직 지원하지 않아요.",
+          );
+        patch.birthYear = year;
+      }
+      setValidation("");
+      mutation.mutate(patch, { onSuccess: () => setDraft({}) });
+    } catch (error) {
+      setValidation((error as Error).message);
+    }
+  }
+  if (query.isLoading)
+    return (
+      <Page>
+        <TopBar title="프로필 편집" />
+        <StateView type="loading" />
+      </Page>
+    );
+  if (query.isError)
+    return (
+      <Page>
+        <TopBar title="프로필 편집" />
+        <StateView
+          type="error"
+          description={query.error.message}
+          onRetry={() => query.refetch()}
+        />
+      </Page>
+    );
   return (
-    <Page action={<Button label="변경 사항 저장" disabled={!nickname.trim()} onPress={() => router.back()} />}>
+    <Page
+      action={
+        <Button
+          label="변경 사항 저장"
+          disabled={!Object.keys(draft).length}
+          loading={mutation.isPending}
+          onPress={save}
+        />
+      }
+    >
       <TopBar title="프로필 편집" />
-      <View style={styles.avatarWrap}><View style={styles.avatar}><UserRound size={38} color={colors.purpleStrong} /></View><Pressable accessibilityRole="button" accessibilityLabel="프로필 사진 변경" style={styles.camera}><Camera size={18} color={colors.white} /></Pressable></View>
-      <View style={styles.fields}>
-        <View style={styles.field}><AppText variant="label">닉네임</AppText><TextInput value={nickname} onChangeText={setNickname} maxLength={12} style={styles.input} /><AppText variant="caption" color={colors.inkFaint} align="right">{nickname.length}/12</AppText></View>
-        <View style={styles.field}><AppText variant="label">한 줄 소개</AppText><TextInput value={bio} onChangeText={setBio} maxLength={40} style={styles.input} /><AppText variant="caption" color={colors.inkFaint} align="right">{bio.length}/40</AppText></View>
-        <View style={styles.field}><AppText variant="label">활동 동네</AppText><Pressable accessibilityRole="button" accessibilityLabel="활동 동네 변경" style={styles.area}><MapPin size={19} color={colors.inkMuted} /><AppText style={styles.areaCopy}>서울 마포구</AppText><AppText variant="caption" color={colors.purpleInk}>변경</AppText></Pressable><AppText variant="caption" color={colors.inkMuted}>구 단위만 프로필에 저장해요.</AppText></View>
+      <View
+        style={{
+          alignSelf: "center",
+          padding: spacing.xl,
+          borderRadius: 60,
+          backgroundColor: colors.purpleSoft,
+          marginVertical: spacing.xl,
+        }}
+      >
+        <UserRound size={38} color={colors.purpleStrong} />
+      </View>
+      <View style={{ gap: spacing.xl }}>
+        {(
+          [
+            { key: "nickname", label: "닉네임", max: 20 },
+            { key: "rankingNickname", label: "랭킹 닉네임", max: 20 },
+            { key: "regionCode", label: "동네 코드 (법정동/행정동)", max: 10 },
+            { key: "birthYear", label: "출생 연도", max: 4 },
+          ] as const
+        ).map(({ key, label, max }) => (
+          <FormField
+            key={key}
+            label={label}
+            value={draft[key] ?? String(query.data?.[key] ?? "")}
+            onChangeText={(value) => {
+              mutation.reset();
+              setDraft({ ...draft, [key]: value });
+            }}
+            maxLength={max}
+            editable={!mutation.isPending}
+            keyboardType={
+              key === "regionCode" || key === "birthYear"
+                ? "number-pad"
+                : "default"
+            }
+            hint={
+              key === "rankingNickname"
+                ? "비워두면 기본 닉네임이 표시돼요."
+                : undefined
+            }
+          />
+        ))}
+        {validation ? (
+          <AppText color={colors.danger}>{validation}</AppText>
+        ) : null}
+        <RequestError error={mutation.error} />
+        {mutation.isSuccess ? (
+          <AppText accessibilityLiveRegion="polite">
+            프로필이 저장됐어요.
+          </AppText>
+        ) : null}
       </View>
     </Page>
   );
 }
-
-const styles = StyleSheet.create({
-  avatarWrap: { alignSelf: "center", marginVertical: spacing.xxl },
-  avatar: { width: 96, height: 96, borderRadius: 48, backgroundColor: colors.purpleSoft, alignItems: "center", justifyContent: "center" },
-  camera: { position: "absolute", right: 0, bottom: 0, width: 36, height: 36, borderRadius: 18, backgroundColor: colors.ink, borderWidth: 3, borderColor: colors.white, alignItems: "center", justifyContent: "center" },
-  fields: { gap: spacing.xl },
-  field: { gap: spacing.xs },
-  input: { height: 54, borderRadius: radius.lg, borderWidth: 1, borderColor: colors.borderStrong, paddingHorizontal: spacing.md, fontFamily: font.regular, fontSize: 16, lineHeight: 24, color: colors.ink },
-  area: { height: 54, flexDirection: "row", alignItems: "center", gap: spacing.xs, borderRadius: radius.lg, borderWidth: 1, borderColor: colors.borderStrong, paddingHorizontal: spacing.md },
-  areaCopy: { flex: 1 },
-});
-
-export default function Screen() { return USE_MSW ? <PreviewEditProfileScreen /> : <UnavailableFeature title="프로필 편집" />; }

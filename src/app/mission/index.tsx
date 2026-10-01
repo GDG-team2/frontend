@@ -17,19 +17,14 @@ import {
 import { colors, layout, radius, spacing } from "@/constants/theme";
 import { useRecommendation, useRecommendMission } from "@/services/queries";
 
-const rejectReasons = [
-  "조금 멀어요",
-  "지금은 실외가 싫어요",
-  "취향이 아니에요",
-  "다른 걸 보고 싶어요",
-];
+import { rejectReasons } from "@/constants/options";
 
 export default function MissionScreen() {
   const router = useRouter();
   const recommendation = useRecommendation();
   const generate = useRecommendMission();
   const [rejectOpen, setRejectOpen] = useState(false);
-  const [reason, setReason] = useState("");
+  const [reason, setReason] = useState<keyof typeof rejectReasons>();
 
   if (recommendation.isLoading)
     return (
@@ -73,6 +68,12 @@ export default function MissionScreen() {
           loading={generate.isPending}
           onPress={() => generate.mutate()}
         />
+        <Button
+          label="기분과 추천 조건 고르기"
+          variant="secondary"
+          disabled={generate.isPending}
+          onPress={() => router.push("/mission/conditions")}
+        />
       </Page>
     );
   }
@@ -86,11 +87,13 @@ export default function MissionScreen() {
         <View style={styles.actionStack}>
           <Button
             label="이 미션으로 나가기"
+            disabled={generate.isPending}
             onPress={() => router.push("/mission/commit")}
           />
           <Pressable
             accessibilityRole="button"
             accessibilityLabel="다른 미션 보기"
+            disabled={generate.isPending}
             onPress={() => setRejectOpen(true)}
             style={styles.rejectButton}
           >
@@ -126,15 +129,22 @@ export default function MissionScreen() {
         ))}
       </View>
       <MapPreview height={230} />
+      {mission.estCost != null ? (
+        <AppText variant="caption" color={colors.inkMuted}>
+          예상 비용 {mission.estCost.toLocaleString()}원 · 편도{" "}
+          {mission.oneWayMin ?? "—"}분 · 왕복 예상{" "}
+          {((mission.routeDistanceM ?? 0) / 1000).toFixed(1)}km
+        </AppText>
+      ) : null}
       <Card tone="subtle" style={styles.metrics}>
         <Metric
           value={mission.durationMin == null ? "—" : `${mission.durationMin}분`}
-          label="예상 시간"
+          label="전체 예상 시간"
         />
         <View style={styles.metricDivider} />
         <Metric
           value={mission.distanceM == null ? "—" : `${mission.distanceM}m`}
-          label="거리"
+          label="직선거리"
         />
         <View style={styles.metricDivider} />
         <Metric
@@ -205,10 +215,12 @@ export default function MissionScreen() {
               </Pressable>
             </View>
             <View style={styles.tags}>
-              {rejectReasons.map((item) => (
+              {(
+                Object.keys(rejectReasons) as (keyof typeof rejectReasons)[]
+              ).map((item) => (
                 <Chip
                   key={item}
-                  label={item}
+                  label={rejectReasons[item]}
                   selected={reason === item}
                   onPress={() => setReason(item)}
                 />
@@ -220,7 +232,7 @@ export default function MissionScreen() {
               loading={generate.isPending}
               onPress={() => {
                 setRejectOpen(false);
-                generate.mutate();
+                generate.mutate({ rejectReason: reason });
               }}
             />
           </View>

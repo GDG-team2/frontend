@@ -1,13 +1,7 @@
-import {
-  Flag,
-  Footprints,
-  MapPin,
-  Navigation,
-  ShieldAlert,
-} from "lucide-react-native";
+import { Flag, Footprints, MapPin, ShieldAlert } from "lucide-react-native";
 import { Redirect, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
-import { Linking, StyleSheet, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 import {
   AppText,
   Button,
@@ -17,6 +11,8 @@ import {
   TopBar,
 } from "@/components/ui";
 import { colors, radius, spacing } from "@/constants/theme";
+import { MapLink } from "@/components/MapLink";
+import { parseKoreaTime } from "@/services/time";
 import { backend } from "@/services/backend";
 import { getMissionCoordinates } from "@/services/location";
 import { useMissionAction, useRecommendation } from "@/services/queries";
@@ -24,6 +20,7 @@ import { useMissionAction, useRecommendation } from "@/services/queries";
 export default function ActiveMissionScreen() {
   const router = useRouter();
   const current = useRecommendation();
+  const [dwellUntil, setDwellUntil] = useState<number | null>(null);
   const [now, setNow] = useState(() => Date.now());
   useEffect(() => {
     const timer = setInterval(() => setNow(Date.now()), 1000);
@@ -33,8 +30,9 @@ export default function ActiveMissionScreen() {
     if (mission.status !== "ARRIVED") {
       if (mission.status !== "IN_PROGRESS")
         throw new Error("먼저 미션을 출발해 주세요.");
-      await backend.arrive(Number(mission.id), await getMissionCoordinates());
+      return backend.arrive(Number(mission.id), await getMissionCoordinates());
     }
+    return { status: "ARRIVED", remainingDwellSeconds: 0 };
   });
   if (current.isLoading)
     return (
@@ -54,7 +52,7 @@ export default function ActiveMissionScreen() {
   if (mission.status === "ARRIVED")
     return <Redirect href="/mission/complete" />;
   const seconds = mission.startedAt
-    ? Math.max(0, Math.floor((now - Date.parse(mission.startedAt)) / 1000))
+    ? Math.max(0, Math.floor((now - parseKoreaTime(mission.startedAt)) / 1000))
     : null;
   const elapsed =
     seconds == null || !Number.isFinite(seconds)
@@ -62,16 +60,36 @@ export default function ActiveMissionScreen() {
       : `${Math.floor(seconds / 60)
           .toString()
           .padStart(2, "0")}:${(seconds % 60).toString().padStart(2, "0")}`;
+  const remaining = dwellUntil
+    ? Math.max(0, Math.ceil((dwellUntil - now) / 1000))
+    : 0;
   return (
     <Page
       action={
         <Button
-          label="도착했어요"
+          label={
+            remaining > 0
+              ? `${remaining}초 머무른 뒤 확인해요`
+              : dwellUntil
+                ? "현재 위치로 도착 다시 확인"
+                : "도착했어요"
+          }
+          disabled={remaining > 0}
           icon={Flag}
           loading={arrive.isPending}
           onPress={() =>
             arrive.mutate(undefined, {
-              onSuccess: () => router.replace("/mission/complete"),
+              onSuccess: (result) => {
+                if (result.status === "ARRIVED")
+                  router.replace("/mission/complete");
+                else if (result.status === "IN_PROGRESS") {
+                  setNow(Date.now());
+                  setDwellUntil(
+                    Date.now() + (result.remainingDwellSeconds ?? 30) * 1000,
+                  );
+                }
+              },
+              onError: () => setDwellUntil(null),
             })
           }
         />
@@ -93,15 +111,11 @@ export default function ActiveMissionScreen() {
         <AppText variant="caption" color={colors.inkMuted}>
           {mission.address}
         </AppText>
-        <Button
-          label="지도에서 목적지 보기"
-          icon={Navigation}
-          variant="secondary"
-          onPress={() =>
-            void Linking.openURL(
-              `https://map.kakao.com/link/map/${encodeURIComponent(mission.destination)},${mission.latitude},${mission.longitude}`,
-            )
-          }
+        <MapLink
+          name={mission.destination}
+          latitude={mission.latitude}
+          longitude={mission.longitude}
+          placeUrl={mission.placeUrl}
         />
       </Card>
       <View style={styles.timer}>
@@ -120,10 +134,19 @@ export default function ActiveMissionScreen() {
           내 속도대로, 한 걸음씩.
         </AppText>
         <AppText color={colors.inkMuted} align="center">
-          목적지에 도착하면 아래 버튼을 눌러주세요.{"\n"}현재 위치로 도착 여부를
-          확인해요.
+          목적지에 도착하면 아래 버튼을 눌러주세요.{"\n"}목적지 반경 80m 안에서
+          30초 머무른 뒤 위치를 다시 확인해요.
         </AppText>
       </View>
+      {dwellUntil ? (
+        <Card tone="purple" style={styles.error}>
+          <AppText accessibilityLiveRegion="polite">
+            {remaining > 0
+              ? "목적지 근처예요. 주변을 둘러보며 잠시 머물러 주세요."
+              : "체류 시간이 지났어요. 아래 버튼으로 현재 위치를 다시 확인해 주세요."}
+          </AppText>
+        </Card>
+      ) : null}
       {arrive.error ? (
         <Card tone="outline" style={styles.error}>
           <AppText accessibilityRole="alert" color={colors.danger}>

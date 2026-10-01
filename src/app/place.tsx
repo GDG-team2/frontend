@@ -1,5 +1,5 @@
 import { useRouter } from "expo-router";
-import { Linking } from "react-native";
+import { MapLink } from "@/components/MapLink";
 import {
   AppText,
   Button,
@@ -44,13 +44,11 @@ export default function PlaceScreen() {
         <AppText>{mission.address}</AppText>
         <AppText>{mission.tags.join(" · ")}</AppText>
       </Card>
-      <Button
-        label="지도에서 보기"
-        onPress={() =>
-          void Linking.openURL(
-            `https://map.kakao.com/link/map/${encodeURIComponent(mission.destination)},${mission.latitude},${mission.longitude}`,
-          )
-        }
+      <MapLink
+        name={mission.destination}
+        latitude={mission.latitude}
+        longitude={mission.longitude}
+        placeUrl={mission.placeUrl}
       />
       <Button
         label="현재 미션으로"

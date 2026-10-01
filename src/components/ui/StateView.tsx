@@ -14,34 +14,78 @@ type StateViewProps = {
   onAction?: () => void;
 };
 
-export function StateView({ type, title, description, onRetry, actionLabel, onAction }: StateViewProps) {
+export function StateView({
+  type,
+  title,
+  description,
+  onRetry,
+  actionLabel,
+  onAction,
+}: StateViewProps) {
   const Icon = type === "error" ? AlertCircle : Inbox;
-  const defaultTitle = type === "loading" ? "준비하고 있어요" : type === "error" ? "잠시 연결이 고르지 않아요" : "아직 기록이 없어요";
+  const defaultTitle =
+    type === "loading"
+      ? "준비하고 있어요"
+      : type === "error"
+        ? "잠시 연결이 고르지 않아요"
+        : "아직 기록이 없어요";
   return (
     <View style={styles.container} accessibilityLiveRegion="polite">
       {type === "loading" ? (
         <ActivityIndicator size="large" color={colors.purple} />
       ) : (
         <View style={styles.iconWrap}>
-          <Icon color={type === "error" ? colors.danger : colors.inkMuted} size={27} />
+          <Icon
+            color={type === "error" ? colors.danger : colors.inkMuted}
+            size={27}
+          />
         </View>
       )}
       <AppText variant="heading" align="center">
         {title ?? defaultTitle}
       </AppText>
-      {description ? (
+      {description || type === "loading" ? (
         <AppText color={colors.inkMuted} align="center">
-          {description}
+          {description ?? "처음 연결할 때는 1분 이상 걸릴 수 있어요."}
         </AppText>
       ) : null}
-      {onRetry ? <Button label="다시 시도" variant="secondary" icon={RotateCcw} onPress={onRetry} style={styles.button} /> : null}
-      {onAction && actionLabel ? <Button label={actionLabel} variant="primary" onPress={onAction} style={styles.button} /> : null}
+      {onRetry ? (
+        <Button
+          label="다시 시도"
+          variant="secondary"
+          icon={RotateCcw}
+          onPress={onRetry}
+          style={styles.button}
+        />
+      ) : null}
+      {onAction && actionLabel ? (
+        <Button
+          label={actionLabel}
+          variant="primary"
+          onPress={onAction}
+          style={styles.button}
+        />
+      ) : null}
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, minHeight: 360, alignItems: "center", justifyContent: "center", gap: spacing.sm, paddingHorizontal: spacing.xl },
-  iconWrap: { width: 56, height: 56, borderRadius: 28, alignItems: "center", justifyContent: "center", backgroundColor: colors.surfaceSubtle },
+  container: {
+    flex: 1,
+    minHeight: 360,
+    alignItems: "center",
+    justifyContent: "center",
+    gap: spacing.sm,
+    paddingHorizontal: spacing.xl,
+  },
+  iconWrap: {
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: colors.surfaceSubtle,
+  },
   button: { marginTop: spacing.xs, maxWidth: 220 },
 });

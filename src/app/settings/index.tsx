@@ -4,24 +4,29 @@ import { useRouter } from "expo-router";
 import {
   Bell,
   ChevronRight,
-  CircleHelp,
   FileText,
-  KeyRound,
   LogOut,
   MapPin,
   ShieldCheck,
   SlidersHorizontal,
 } from "lucide-react-native";
-import { Pressable, StyleSheet, View } from "react-native";
+import { Linking, Pressable, StyleSheet, View } from "react-native";
 
 import { AppText, Card, ListRow, Page, TopBar } from "@/components/ui";
 import { colors, spacing } from "@/constants/theme";
 import { clearAccessToken } from "@/services/session";
+import { useState } from "react";
+import { legalDocuments } from "@/constants/legal";
+import { useMe, usePreferences } from "@/services/queries";
+import { budgets, moveTypes } from "@/constants/options";
 import { useAppStore } from "@/store/app-store";
 
 export default function SettingsScreen() {
   const router = useRouter();
   const client = useQueryClient();
+  const me = useMe();
+  const preferences = usePreferences();
+  const [error, setError] = useState("");
   const reset = useAppStore((state) => state.reset);
   async function logout() {
     await clearAccessToken();
@@ -40,6 +45,16 @@ export default function SettingsScreen() {
         앱 설정
       </AppText>
       <Card tone="outline" style={styles.group}>
+        <ListRow
+          title="추천 기본값"
+          subtitle={
+            preferences.data
+              ? `${preferences.data.walkTime}분 · ${moveTypes[preferences.data.moveType ?? "WALK"]} · ${budgets[preferences.data.budget ?? "ANY"]}`
+              : "시간 · 이동수단 · 예산 · 주간 목표"
+          }
+          icon={SlidersHorizontal}
+          onPress={() => router.push("/onboarding/preferences")}
+        />
         <ListRow
           title="알림 설정"
           subtitle="미션 · 목표 · 혜택"
@@ -69,31 +84,44 @@ export default function SettingsScreen() {
         도움과 정보
       </AppText>
       <Card tone="outline" style={styles.group}>
-        <ListRow title="도움말" icon={CircleHelp} onPress={() => undefined} />
-        <ListRow title="이용약관" icon={FileText} onPress={() => undefined} />
-        <ListRow
-          title="개인정보 처리방침"
-          icon={KeyRound}
-          onPress={() => undefined}
-        />
+        {legalDocuments.map(({ key, label, url }) => (
+          <ListRow
+            key={key}
+            title={label}
+            subtitle={url ? "원문 보기" : "준비 중"}
+            icon={FileText}
+            onPress={
+              url
+                ? () =>
+                    void Linking.openURL(url).catch(() =>
+                      setError("약관 페이지를 열지 못했어요."),
+                    )
+                : undefined
+            }
+          />
+        ))}
       </Card>
       <Card tone="subtle" style={styles.appInfo}>
         <View>
           <AppText variant="label">오하꼼</AppText>
           <AppText variant="caption" color={colors.inkMuted}>
-            버전 1.0.0 · Expo SDK 57
+            버전 1.0.0
           </AppText>
         </View>
         <View style={styles.buildBadge}>
           <AppText variant="caption" color={colors.purpleInk}>
-            {USE_MSW ? "MSW QA" : "API 연결"}
+            {USE_MSW ? "MSW QA" : "계정"}
           </AppText>
         </View>
       </Card>
       <Pressable
         accessibilityRole="button"
         accessibilityLabel="로그아웃"
-        onPress={() => void logout()}
+        onPress={() =>
+          void logout().catch(() =>
+            setError("로그아웃하지 못했어요. 다시 시도해 주세요."),
+          )
+        }
         style={styles.logout}
       >
         <LogOut size={18} color={colors.danger} />
@@ -106,16 +134,13 @@ export default function SettingsScreen() {
           style={styles.logoutChevron}
         />
       </Pressable>
-      <Pressable
-        accessibilityRole="button"
-        accessibilityLabel="위치 안내"
-        style={styles.locationNote}
-      >
+      {error ? <AppText color={colors.danger}>{error}</AppText> : null}
+      <View style={styles.locationNote}>
         <MapPin size={15} color={colors.inkFaint} />
         <AppText variant="caption" color={colors.inkFaint}>
-          현재 활동 동네 · 서울 마포구
+          활동 동네 · {me.data?.district ?? "확인 중"}
         </AppText>
-      </Pressable>
+      </View>
     </Page>
   );
 }

@@ -52,7 +52,7 @@ export default function HomeScreen() {
         <StateView
           type="empty"
           title="프로필을 찾지 못했어요"
-          description="QA 상태를 초기화한 뒤 다시 확인해 주세요."
+          description="다시 로그인한 뒤 확인해 주세요."
         />
       </Page>
     );
@@ -128,7 +128,7 @@ export default function HomeScreen() {
           >
             <View style={styles.heroBadgeDot} />
             <AppText variant="caption" color={colors.limeInk}>
-              {user.streak}일 연속 산책
+              {user.rhythmWeeks}주 연속 목표 달성
             </AppText>
           </View>
         </View>
@@ -149,7 +149,7 @@ export default function HomeScreen() {
         >
           <View style={styles.progressCopy}>
             <AppText variant="caption" color={colors.limeInk}>
-              차곡차곡 쌓인 나의 한 칸
+              이번 주 {user.weeklyDone}/{user.weeklyGoal}회
             </AppText>
             <AppText variant="label" color={colors.limeInk}>
               총 {user.totalOutings}번 완료
@@ -217,6 +217,18 @@ export default function HomeScreen() {
         )}
       </View>
 
+      <View style={{ gap: spacing.xs, marginTop: spacing.md }}>
+        <Button
+          label="내 출발 약속 보기"
+          variant="secondary"
+          onPress={() => router.push("/my-missions")}
+        />
+        <Button
+          label="오늘의 기분과 추천 조건"
+          variant="secondary"
+          onPress={() => router.push("/mission/conditions")}
+        />
+      </View>
       <View
         style={[styles.insightRow, narrowViewport && styles.insightRowNarrow]}
       >

@@ -1,0 +1,138 @@
+{
+  "verifiedAt": "2026-10-01T04:57:30.336Z",
+  "baseUrl": "https://ohakkom-backend.onrender.com/api/v1",
+  "outcome": "pass",
+  "operations": 23,
+  "checks": [
+    {
+      "method": "POST",
+      "path": "/api/v1/auth/signup",
+      "status": 201
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/auth/login",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/auth/reissue",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/users/profile",
+      "status": 200
+    },
+    {
+      "method": "PATCH",
+      "path": "/api/v1/users/profile",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/users/settings",
+      "status": 200
+    },
+    {
+      "method": "PATCH",
+      "path": "/api/v1/users/settings",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/users/preferences",
+      "status": 200
+    },
+    {
+      "method": "PATCH",
+      "path": "/api/v1/users/preferences",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/missions/current",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/recommendation",
+      "status": 200
+    },
+    {
+      "method": "PUT",
+      "path": "/api/v1/missions/4/schedule",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/missions/scheduled",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/recommendation",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/5/abort",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/missions/5",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/4/start",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/4/arrive",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/4/arrive",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/missions/4/complete",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/missions/4",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/missions/history",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/missions/map",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/rewards/points/history",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/rewards/badges",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/rankings/my-region",
+      "status": 200
+    }
+  ]
+}

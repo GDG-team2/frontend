@@ -4,7 +4,11 @@ const spec = JSON.parse(
 );
 function type(schema) {
   if (schema.$ref) return schema.$ref.split("/").at(-1);
-  if (schema.type === "array") return `${type(schema.items)}[]`;
+  if (schema.enum)
+    return schema.enum.map((value) => JSON.stringify(value)).join(" | ");
+  if (schema.type === "array") return `(${type(schema.items)})[]`;
+  if (schema.type === "object" && schema.additionalProperties)
+    return "Record<string, unknown>";
   if (schema.type === "object")
     return `{\n${Object.entries(schema.properties ?? {})
       .map(
